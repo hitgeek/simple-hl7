@@ -1,0 +1,25 @@
+{
+  "name": "simple-hl7",
+  "version": "0.0.1",
+  "description": "simple library for parsing and creating hl7 messages",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hitgeek/hl7.git"
+  },
+  "keywords": [
+    "hl7"
+  ],
+  "author": "rupp.io",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/hitgeek/hl7/issues"
+  },
+  "homepage": "https://github.com/hitgeek/hl7#readme"
+}
