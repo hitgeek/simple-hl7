@@ -163,7 +163,7 @@ describe("Message", function() {
     it('should print out structured hl7 message', function() {
       var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
 
-      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2\r");
+      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2");
     });
   });
   describe(".addSegment()", function() {
