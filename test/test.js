@@ -171,12 +171,12 @@ describe("Message", function() {
       var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", "Field 2");
 
-      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2");
 
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", ["Component 1", "Component 2"]);
 
       assert.equal(emptyMessageWithSomeHeader.toString(deliminters),
-      "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2\rNME|Field 1|Component 1^Component 2");
+      "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2\r\nNME|Field 1|Component 1^Component 2");
     });
   });
   describe(".getSegment()", function() {
@@ -191,7 +191,7 @@ describe("Message", function() {
       segmentFromMessage.editField(1, ["Component 1", "Component 2"]);
 
       assert.equal(segmentFromMessage.toString(deliminters), "NME|Component 1^Component 2|Field 2");
-      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(deliminters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Component 1^Component 2|Field 2");
 
     });
   });
@@ -202,11 +202,13 @@ describe("Parser", function() {
     var samples = fs.readdirSync('test/samples')
 
     for (var i = 0; i < samples.length - 1; i++) {
-      it('should successfully process this sample ' + samples[i], function() {
-        var sampleText = fs.readFileSync('test/samples/' + samples[i]).toString();
-        var sampleParsed = parser.parse(sampleText);
-        assert.equal(sampleParsed.toString(), sampleText);
-      });
+      if (samples[i].indexOf('.hl7') > -1) {
+        it('should successfully process this sample ' + samples[i], function() {
+          var sampleText = fs.readFileSync('test/samples/' + samples[i]).toString();
+          var sampleParsed = parser.parse(sampleText);
+          assert.equal(sampleParsed.toString(), sampleText);
+        });
+      }
     }
   });
 });
