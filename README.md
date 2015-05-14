@@ -58,6 +58,11 @@ msg.getSegment("PID").editField(6, "19580302");
 
 console.log(msg.toString());
 
+/*
+MSH|^~\&|EPIC|EPICADT|SMS|199912271408|CHARRIS|ADT^A04
+PID||0493575^^^2^^ID 1|454721||DOE^JOHN^^^^|19580302
+*/
+
 ```
 
 ## Installation
