@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hitgeek/hl7.git"
+    "url": "git+https://github.com/hitgeek/simple-hl7.git"
   },
   "keywords": [
     "hl7"
   ],
-  "author": "rupp.io",
+  "author": "Bob Rupp",
   "license": "GNU",
   "bugs": {
-    "url": "https://github.com/hitgeek/hl7/issues"
+    "url": "https://github.com/hitgeek/simple-hl7/issues"
   },
-  "homepage": "https://github.com/hitgeek/hl7#readme"
+  "homepage": "https://github.com/hitgeek/simple-hl7#readme"
 }
