@@ -63,6 +63,24 @@ MSH|^~\&|EPIC|EPICADT|SMS|199912271408|CHARRIS|ADT^A04
 PID||0493575^^^2^^ID 1|454721||DOE^JOHN^^^^|19580302
 */
 
+console.log('-----Lets use Get Segments to look for Abnormal Values----')
+
+//the value of fields.value is always and array, because fields can repeat.
+//a more elegant API for this will probably be added
+msg.getSegments("OBX").forEach(function(segment) {
+  var testName = segment.fields[1].value[0][1];
+  var result = segment.fields[3].value[0][0];
+  var lowRange = segment.fields[5].value[0][1];
+
+  if (result < lowRange) {
+    console.log(testName + " was low. Result: " + result + ", Low Range: " + lowRange);
+  }
+
+});
+
+//Triglyceride (CAD) was low. Result: 15, Low Range: 35
+
+
 ```
 
 ## Installation
