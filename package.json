@@ -1,10 +1,13 @@
 {
   "name": "simple-hl7",
-  "version": "0.0.0",
-  "description": "simple library for parsing and creating hl7 messages",
+  "version": "0.1.0",
+  "description": "simple library for creating and parsing hl7 messages",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
+  },
+  "devDependencies": {
+    "mocha": "*"
   },
   "scripts": {
     "test": "mocha"
@@ -16,7 +19,7 @@
   "keywords": [
     "hl7"
   ],
-  "author": "Bob Rupp",
+  "author": "Bob Rupp <bob@rupp.io>",
   "license": "GNU",
   "bugs": {
     "url": "https://github.com/hitgeek/simple-hl7/issues"
