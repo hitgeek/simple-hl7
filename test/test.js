@@ -104,6 +104,15 @@ describe("Segment", function() {
       assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 3");
     });
   });
+  describe('.getField()', function() {
+    it('should return a single field from the field value array', function() {
+      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
+
+      assert.equal(simpleSegment.getField(2), "Field 2");
+      assert.equal(simpleSegment.getField(3)[0], "Component 1");
+
+    });
+  });
 });
 
 describe("Header", function() {
@@ -154,6 +163,15 @@ describe("Header", function() {
       simpleSegment.removeField(2);
 
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 3");
+    });
+  });
+  describe('.getField()', function() {
+    it('should return a single field from the field value array', function() {
+      var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
+
+      assert.equal(simpleSegment.getField(2), "Field 2");
+      assert.equal(simpleSegment.getField(3)[0], "Component 1");
+
     });
   });
 });
