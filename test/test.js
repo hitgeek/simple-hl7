@@ -189,12 +189,12 @@ describe("Message", function() {
       var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", "Field 2");
 
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Field 1|Field 2");
 
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", ["Component 1", "Component 2"]);
 
       assert.equal(emptyMessageWithSomeHeader.toString(delimiters),
-      "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2\r\nNME|Field 1|Component 1^Component 2");
+      "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Field 1|Field 2\nNME|Field 1|Component 1^Component 2");
     });
   });
   describe(".getSegment()", function() {
@@ -209,7 +209,7 @@ describe("Message", function() {
       segmentFromMessage.editField(1, ["Component 1", "Component 2"]);
 
       assert.equal(segmentFromMessage.toString(delimiters), "NME|Component 1^Component 2|Field 2");
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Component 1^Component 2|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2");
 
     });
   });
@@ -229,15 +229,27 @@ describe("Message", function() {
 });
 
 describe("Parser", function() {
+  describe(".parse()", function() {
+    it('should parse message with different segment seperators', function() {
+      var msg1 = "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2"
+      var msg2 = "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2"
+
+      assert.equal(parser.parse(msg1).segments.length, 1);
+      assert.equal(new Parser({segmentSeperator: '\r'}).parse(msg2).segments.length, 1);
+    });
+  });
   describe("Parse sample documents. Success = output same as input", function() {
     var samples = fs.readdirSync('test/samples')
 
     for (var i = 0; i < samples.length - 1; i++) {
       if (samples[i].indexOf('.hl7') > -1) {
-        it('should successfully process this sample ' + samples[i], function() {
-          var sampleText = fs.readFileSync('test/samples/' + samples[i]).toString();
-          var sampleParsed = parser.parse(sampleText);
-          assert.equal(sampleParsed.toString(), sampleText);
+        it('should successfully process this sample ' + samples[i], function(done) {
+
+          parser.parseFile('test/samples/' + samples[i], function(sampleParsed) {
+            var sampleText = fs.readFileSync('test/samples/' + samples[i]).toString();
+            assert.equal(sampleParsed.toString(), sampleText);
+            done()
+          });
         });
       }
     }
