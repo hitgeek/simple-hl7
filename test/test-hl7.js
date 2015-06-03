@@ -189,12 +189,12 @@ describe("Message", function() {
       var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", "Field 2");
 
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Field 1|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2");
 
       emptyMessageWithSomeHeader.addSegment("NME", "Field 1", ["Component 1", "Component 2"]);
 
       assert.equal(emptyMessageWithSomeHeader.toString(delimiters),
-      "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Field 1|Field 2\nNME|Field 1|Component 1^Component 2");
+      "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Field 1|Field 2\r\nNME|Field 1|Component 1^Component 2");
     });
   });
   describe(".getSegment()", function() {
@@ -209,7 +209,7 @@ describe("Message", function() {
       segmentFromMessage.editField(1, ["Component 1", "Component 2"]);
 
       assert.equal(segmentFromMessage.toString(delimiters), "NME|Component 1^Component 2|Field 2");
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2");
+      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\r\nNME|Component 1^Component 2|Field 2");
 
     });
   });
@@ -239,7 +239,7 @@ describe("Parser", function() {
     });
   });
   describe("Parse sample documents. Success = output same as input", function() {
-    var samples = fs.readdirSync('test/samples')
+    var samples = fs.readdirSync('test/samples');
 
     for (var i = 0; i < samples.length - 1; i++) {
       if (samples[i].indexOf('.hl7') > -1) {
@@ -247,7 +247,8 @@ describe("Parser", function() {
 
           parser.parseFile('test/samples/' + samples[i], function(sampleParsed) {
             var sampleText = fs.readFileSync('test/samples/' + samples[i]).toString();
-            assert.equal(sampleParsed.toString(), sampleText);
+            assert.ok(sampleParsed.segments.length > 0);
+            assert.equal(sampleParsed.toString(), sampleText.replace(/\r?\n/g, "\r\n"));
             done()
           });
         });

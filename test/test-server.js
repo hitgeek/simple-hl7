@@ -16,7 +16,7 @@ describe('FileServer', function() {
       fileServer.on('msg', function(newFile) {
         console.log('new message');
 
-        assert.equal(newFile.hl7.toString(), hl7TestMessage);
+        assert.equal(newFile.hl7.toString(), hl7TestMessage.replace(/\r?\n/g, "\r\n"));
 
         fs.unlinkSync(newFile.path);
         fs.rmdirSync('test/import');
@@ -73,7 +73,7 @@ describe('TcpServer', function() {
 
       tcpServer.on('msg', function(data) {
         var msg = parser.parse(data.toString());
-        assert.equal(msg.toString(), adt.toString());
+        assert.equal(msg.toString(), adt.toString())
       });
 
       tcpServer.start(8686);
@@ -84,7 +84,7 @@ describe('TcpServer', function() {
         tcpClient.connect('127.0.0.1', 8686);
 
         tcpClient.send(adt, function(ack) {
-          assert.equal(ack.toString(), 'MSH|^~\&|SMS|SMSADT|EPIC|EPICADT|20150522202757||ACK|ACK20150522202757|P|2.3\rMSA|AA|1817457')
+          assert.equal(ack.toString(), 'MSH|^~\&|SMS|SMSADT|EPIC|EPICADT|20150522202757||ACK|ACK20150522202757|P|2.3\r\nMSA|AA|1817457')
         });
       }, 1000);
 
