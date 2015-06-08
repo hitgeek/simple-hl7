@@ -10,13 +10,13 @@ describe('FileServer', function() {
     this.timeout(10000);
     it('should start the file server listening on a folder, and emit event on new file', function(done) {
       fs.mkdirSync('test/import');
-      var hl7TestMessage = fs.readFileSync('test/samples/adt.hl7').toString();
+      var hl7TestMessage = fs.readFileSync('test/samples/adt.hl7').toString().replace(/\r?\n/g, "\r");
       var fileServer = server.createFileServer();
 
       fileServer.on('msg', function(newFile) {
         console.log('new message');
 
-        assert.equal(newFile.hl7.toString(), hl7TestMessage.replace(/\r?\n/g, "\r\n"));
+        assert.equal(newFile.hl7.toString(), hl7TestMessage);
 
         fs.unlinkSync(newFile.path);
         fs.rmdirSync('test/import');
