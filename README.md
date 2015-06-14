@@ -115,12 +115,15 @@ $ npm install simple-hl7
   * Supports repeating fields and subcomponents
   * Parse any HL7 message type into standard simple structure
   * Edit parts of HL7 file and resave (perfect for preprocessing)
+  * Send and Recieve HL7 messages via TCP and File System Directories
+  * Uses HL7 message API from "simple-hl7" see npm/github for more info
+  * Perfect library for HL7 message "preprocessing" or testing
 
 ## Philosophy
-This library has two goals. Create any HL7 message type with "visual" constructor syntax that mimics the structure of the message. Parse any HL7 messsage into a simple standard structure that can easy be modified in place. The supported message formats is not intended to be expansive but realistic based on common real world scenarios.
+This library has three goals. Create any HL7 message type with "visual" constructor syntax that mimics the structure of the message. Parse any HL7 messsage into a simple standard structure that can easy be modified in place. The supported message formats is not intended to be expansive but realistic based on common real world scenarios. Provide set of simple tools for sending and recieving messages.
 
 ## Examples
-View the tests for examples of creating repeating fields, subcomponents and other less common formats.
+Look at examples folder.
 
 ## People
 Author: Bob Rupp bob@rupp.io
