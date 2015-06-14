@@ -101,7 +101,7 @@ msg.getSegments("OBX").forEach(function(segment) {
 //Triglyceride (CAD) was low. Result: 15, Low Range: 35
 
 
-```js
+```
 
 ## Installation
 
