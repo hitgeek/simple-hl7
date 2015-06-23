@@ -245,21 +245,19 @@ describe("Parser", function() {
 
       samples.forEach(function(x) {
 
-        var sampleText = fs.readFileSync('test/samples/' + x).toString().replace(/\r?\n/g, "\r");
+        var sampleText = fs.readFileSync('test/samples/' + x).toString().replace(/\r?\n/g, "\r").trim();
         var sampleParse = parser.parse(sampleText);
 
         assert.ok(sampleParse.segments.length > 0);
         assert.equal(sampleParse.toString(), sampleText);
-
       });
-
-
     });
-
-
-
-
-
-
   });
+  describe("Ignore Empty Lines", function() {
+    it('should parse the correct number of segments', function() {
+      var sample = fs.readFileSync('test/samples/adt.txt');
+      var adt = parser.parse(sample.toString().replace(/\r?\n/g, "\r"));
+      assert.equal(adt.segments.length, 3);
+    })
+  })
 });
