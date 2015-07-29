@@ -1,6 +1,8 @@
 #simple-hl7
 A simple library for working with version 2 HL7 messages. It includes a parser, an API for creating messages, and server components for sending and receiving messages.
 
+check out tutorial video at https://www.youtube.com/watch?v=PyX7RHjpcg4
+
 ```js
 var hl7    = require('simple-hl7');
 var server = hl7.Server;
