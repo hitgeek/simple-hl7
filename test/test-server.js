@@ -6,12 +6,13 @@ var server = hl7.Server;
 
 
 describe('FileServer', function() {
+  var fileServer;
   describe('.start()', function() {
     this.timeout(10000);
     it('should start the file server listening on a folder, and emit event on new file', function(done) {
       fs.mkdirSync('test/import');
       var hl7TestMessage = fs.readFileSync('test/samples/adt.hl7').toString().replace(/\r?\n/g, "\r");
-      var fileServer = server.createFileServer();
+      fileServer = server.createFileServer();
 
       fileServer.on('msg', function(newFile) {
         console.log('new message');
@@ -31,6 +32,14 @@ describe('FileServer', function() {
 
     });
   });
+
+  describe('.stop()', function() {
+    it('should  stop the server listening', function() {
+      fileServer.stop();
+      //if no errors assume it works?
+    });
+  });
+
 });
 
 describe('FileClient', function() {
@@ -63,13 +72,14 @@ describe('FileClient', function() {
 });
 
 describe('TcpServer', function() {
+  var tcpServer
   describe('.start()', function() {
     this.timeout(10000);
     it('should start a tcp server listenting on specified port, and respond to messages', function() {
       var parser = new hl7.Parser();
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
 
-      var tcpServer = server.createTcpServer();
+      tcpServer = server.createTcpServer();
 
       tcpServer.on('msg', function(data) {
         var msg = parser.parse(data.toString());
@@ -90,4 +100,11 @@ describe('TcpServer', function() {
 
     });
   });
+
+  describe('.stop()', function() {
+    it('should stop the tcp server', function() {
+      tcpServer.stop()
+      //assume it worked if no exception???
+    });
+  })
 })
