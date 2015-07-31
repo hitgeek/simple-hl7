@@ -113,6 +113,13 @@ describe("Segment", function() {
 
     });
   });
+  describe('.getComponent()', function(){
+    it('should return the component at index', function() {
+      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
+      var c = simpleSegment.getComponent(3, 1);
+      assert.equal(c, "Component 1");
+    });
+  });
 });
 
 describe("Header", function() {
