@@ -1,7 +1,10 @@
 #simple-hl7
+
+*If anyone is using simple-hl7 for intersting projects I'd love to hear about it. Go to [rupp.io/contact](http://rupp.io/contact) and tell me what you are working on.*
+
 A simple library for working with version 2 HL7 messages. It includes a parser, an API for creating messages, and server components for sending and receiving messages.
 
-check out tutorial video at https://www.youtube.com/watch?v=PyX7RHjpcg4
+[check out tutorial video](https://www.youtube.com/watch?v=PyX7RHjpcg4)
 
 ```js
 var hl7    = require('simple-hl7');
