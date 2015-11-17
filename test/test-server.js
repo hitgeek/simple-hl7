@@ -44,6 +44,7 @@ describe('FileServer', function() {
 
 describe('FileClient', function() {
   describe('.send()', function() {
+    this.timeout(10000);
     it('should take an hl7 message and write it to the destination folder', function(done) {
       var parser = new hl7.Parser();
       var hl7MessageString = fs.readFileSync('./test/samples/oru-imm.hl7').toString();
@@ -56,16 +57,13 @@ describe('FileClient', function() {
 
       fileClient.send(msg, function() {
 
-        assert.equal(fs.statSync(path.join('./test/export', newMessageName)).isFile(), true);
 
-        fs.unlinkSync(path.join('./test/export', newMessageName));
         setTimeout(function() {
+          assert.equal(fs.statSync(path.join('./test/export', newMessageName)).isFile(), true);
+          fs.unlinkSync(path.join('./test/export', newMessageName));
           fs.rmdirSync('./test/export');
           done();
-        }, 1000);
-
-
-
+        }, 5000)
       });
     });
   });
@@ -75,7 +73,7 @@ describe('TcpServer', function() {
   var tcpServer
   describe('.start()', function() {
     this.timeout(10000);
-    it('should start a tcp server listenting on specified port, and respond to messages', function() {
+    it('should start a tcp server listenting on specified port, and respond to messages', function(done) {
       var parser = new hl7.Parser();
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
 
@@ -94,7 +92,7 @@ describe('TcpServer', function() {
         tcpClient.connect('127.0.0.1', 8686);
 
         tcpClient.send(adt, function(ack) {
-          assert.equal(ack.toString(), 'MSH|^~\&|SMS|SMSADT|EPIC|EPICADT|20150522202757||ACK|ACK20150522202757|P|2.3\r\nMSA|AA|1817457')
+          done();
         });
       }, 1000);
 
@@ -107,4 +105,26 @@ describe('TcpServer', function() {
       //assume it worked if no exception???
     });
   })
-})
+});
+
+describe('TcpClient', function() {
+  describe('.connect()', function() {
+    this.timeout(10000);
+    it('should throw exception if it cant connect', function(done) {
+      var client = server.createTcpClient();
+
+
+
+      client.connect('127.0.0.1', 8888);
+
+      client.client.on('error', function(err) {
+        assert.equal(err.code, "ECONNREFUSED");
+      });
+
+      setTimeout(function() {
+        done()
+      }, 5000);
+
+    });
+  })
+});
