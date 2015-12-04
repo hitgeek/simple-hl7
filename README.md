@@ -130,6 +130,17 @@ This library has three goals. Create any HL7 message type with "visual" construc
 ## Examples
 Look at examples folder.
 
+## EOL / Carriage returns
+The HL7 Messaging Standard specifies that end of lines / segment separators must be carriage returns rather than linebreaks. This affects output display on command line. Two workarounds:
+* Piping the output to `tr`:
+```sh
+node file.js | tr '\r' '\n'
+```
+* Overriding the default segment separator in the code:
+```js
+msg.header.delimiters.segmentSeperator = '\n';
+```
+
 ## People
 Author: Bob Rupp bob@rupp.io
 
