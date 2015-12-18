@@ -145,4 +145,4 @@ msg.header.delimiters.segmentSeperator = '\n';
 Author: Bob Rupp bob@rupp.io
 
 ##License
-GNU
+GPL version 2
