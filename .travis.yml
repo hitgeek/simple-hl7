@@ -1,8 +1,11 @@
 language: node_js
 node_js:
-  - "4.1"
-  - "4.0"
-  - "0.12"
-  - "0.11"
-  - "0.10"
-  - "iojs"
+- '4.1'
+- '4.0'
+- '0.12'
+- '0.11'
+- '0.10'
+- iojs
+notifications:
+  slack:
+    secure: BglX3FA5YS40/g5GcHETfLxvgnL7k0s5po9jvkY3gGw9DoLTIGZCud/zmbFus3/fqtqWL8x22wazIR2VHCcMLyPK0SNd4QtekqkLJOyfDpa0BYZNN6IcH+UVcjb2ljoTo+seRQ0vo6bqvoa0uEiWGPI7o0wYWZMMmZMmdsrqMhfGUMEq7ibLBKvAmuT6LiqnWbVzPrr+B8P8EI8YUgHwTOGPDqoAnP37knZ4kwDKoH+N7FzEFIyPsbzIothMd9jzZAEZ8D36MuW3xY9Vb5Gotwg265G8+7/lmYcjLD6q8Qv/wfLBsHMkR8gAkkZkBcey9Iu1uYAXF3LV7goCbGcB+VNITxCJYzyTrxjsGcKq/AeifaR3rNnzBjFj18DOQV1QgeaGJO3ezVBdc+vNkpzzqwm3MHlrrt5zwc01wUFyh0Suh2BdrAKlaGeccmHITNud5JyRNOb31GFQW0xuNSUhghWtIWn/gwC7R4nV1w87vRgYtv7R3JbtQzr1b9uXtkLOKm/u5clTtGBG5nrlOleBkLcj/WSDVoeF9ruUUpqK6Fdle3PQ/56+4wT4uyrk81i4aXWO6COSeF5h6P3QJhvTBceqeh1MjENx3QL2O7AgtGG6sU7nJrBgFZBhL9PMMNefWPO5UXrpnWFdbVtXEdF/FqGEluVNPejusHENgZfamwc=
