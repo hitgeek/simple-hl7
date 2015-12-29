@@ -1,4 +1,5 @@
 #simple-hl7
+![Image Build Status](https://travis-ci.org/hitgeek/simple-hl7.svg?branch=master)
 
 *If anyone is using simple-hl7 for intersting projects I'd love to hear about it. Go to [rupp.io/contact](http://rupp.io/contact) and tell me what you are working on.*
 
