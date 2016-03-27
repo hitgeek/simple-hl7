@@ -1,9 +1,14 @@
 var assert = require('assert');
 var fs     = require('fs');
 var hl7    = require('../lib/index.js');
+var net    = require('net');
 var path   = require('path');
 var server = hl7.Server;
 
+
+var VT = String.fromCharCode(0x0b);
+var FS = String.fromCharCode(0x1c);
+var CR = String.fromCharCode(0x0d);
 
 describe('FileServer', function() {
   var fileServer;
@@ -92,10 +97,32 @@ describe('TcpServer', function() {
         tcpClient.connect('127.0.0.1', 8686);
 
         tcpClient.send(adt, function(ack) {
+          tcpClient.close();
           done();
         });
       }, 1000);
 
+    });
+    it('should work correctly if message sent as 2 parts', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+
+      setTimeout(function() {
+        var rawTcpClient = net.connect({host: '127.0.0.1', port: 8686});
+
+        rawTcpClient.on('data', function(data) {
+          rawTcpClient.end();
+          done();
+        });
+
+        var part1 = adt.toString().substring(0, 10);
+        var part2 = adt.toString().substring(10, adt.toString().length);
+
+        rawTcpClient.write(VT + part1);
+        setTimeout(function() {
+          rawTcpClient.write(part2 + FS + CR);
+        }, 2000)
+      }, 1000);
     });
   });
 
@@ -104,7 +131,10 @@ describe('TcpServer', function() {
       tcpServer.stop()
       //assume it worked if no exception???
     });
-  })
+  });
+
+
+
 });
 
 describe('TcpClient', function() {
