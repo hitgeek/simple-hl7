@@ -1,6 +1,6 @@
 {
   "name": "simple-hl7",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "simple library for creating and parsing hl7 messages",
   "main": "lib/index.js",
   "directories": {
