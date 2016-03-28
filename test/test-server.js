@@ -124,6 +124,38 @@ describe('TcpServer', function() {
         }, 2000)
       }, 1000);
     });
+
+    it('should override createAckMessage function', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+      tcpServer.createAckMessage = function(msg) {
+        var ack = new hl7.Message(
+                              msg.header.getField(3),
+                              msg.header.getField(4),
+                              msg.header.getField(1),
+                              msg.header.getField(2),
+                              "DATEGOESHEREDONTNEEDIT",
+                              '',
+                              ["ACK"],
+                              'ACK' + "ANOTHERDATEDONTNEEDIT",
+                              'T',
+                              '2.5')
+
+        ack.addSegment("MSA", "AA", msg.header.getField(8))
+        return ack.toString();
+      };
+
+      var tcpClient = server.createTcpClient();
+
+      tcpClient.connect('127.0.0.1', 8686);
+
+      tcpClient.send(adt, function(ack) {
+        tcpClient.close();
+        assert.equal('MSH|^~\\&|SMS|SMSADT|EPIC|EPICADT|DATEGOESHEREDONTNEEDIT||ACK|ACKANOTHERDATEDONTNEEDIT|T|2.5\rMSA|AA|1817457', ack.toString())
+        done()
+      })
+    });
+
   });
 
   describe('.stop()', function() {
