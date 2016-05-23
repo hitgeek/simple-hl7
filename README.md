@@ -34,6 +34,7 @@ tcpClient.send(msg);
 The message constructor creates the MSH segment. Each argument is a field.
 */
 
+
 var adt = new hl7.Message(
                     "EPIC",
                     "EPICADT",
@@ -49,6 +50,7 @@ var adt = new hl7.Message(
 The first argument is segment name, and the rest of the arguments are added as fields.
 */
 
+
 adt.addSegment("PID",
             "", //Blank field
             ["0493575", "", "", "2", "", "ID 1"], //Multiple components
@@ -59,6 +61,11 @@ adt.addSegment("PID",
             //Keep adding arguments to add more fields
         );
 
+//******CHANGE THE SEGMENT SEPERATOR SO IT PRINTS NICELY TO console.log******
+adt.header.delimiters.segmentSeperator = '\n'
+//Default segmentSeperator is \r, which does not print well to console.log
+
+
 console.log(adt.toString());
 
 /*
@@ -68,7 +75,8 @@ PID||0493575^^^2^^ID 1|454721||DOE^JOHN^^^^|19480203
 
 console.log('-----The Date of Birth in PID.6 will get updated-----')
 
-var parser = new hl7.Parser();
+//Change segment seperator to match the override set above
+var parser = new hl7.Parser({segmentSeperator: '\n'});
 
 /*
 Parse any HL7 message string, could be from File, TCP Socket, Web Service.
@@ -82,6 +90,8 @@ Segment objects expose .editField, .addField, and .removeField
 
 msg.getSegment("PID").editField(6, "19580302");
 
+//******CHANGE THE SEGMENT SEPERATOR SO IT PRINTS NICELY TO console.log******
+msg.header.delimiters.segmentSeperator = '\n'
 console.log(msg.toString());
 
 /*
