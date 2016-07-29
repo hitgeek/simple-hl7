@@ -20,7 +20,7 @@
     "hl7"
   ],
   "author": "Bob Rupp <bob@rupp.io>",
-  "license": "GPL-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/hitgeek/simple-hl7/issues"
   },
