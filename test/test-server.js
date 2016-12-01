@@ -60,7 +60,8 @@ describe('FileClient', function() {
       fs.mkdirSync('./test/export/')
       var fileClient = server.createFileClient('./test/export/');
 
-      fileClient.send(msg, function() {
+      fileClient.send(msg, function(err) {
+        console.log(err);
 
 
         setTimeout(function() {
@@ -82,11 +83,8 @@ describe('TcpServer', function() {
       var parser = new hl7.Parser();
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
 
-      tcpServer = server.createTcpServer();
-
-      tcpServer.on('msg', function(data) {
-        var msg = parser.parse(data.toString());
-        assert.equal(msg.toString(), adt.toString())
+      tcpServer = server.createTcpServer(function(err, req, res) {
+        res.end();
       });
 
       tcpServer.start(8686);
@@ -124,38 +122,6 @@ describe('TcpServer', function() {
         }, 2000)
       }, 1000);
     });
-
-    it('should override createAckMessage function', function(done) {
-      var parser = new hl7.Parser();
-      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
-      tcpServer.createAckMessage = function(msg) {
-        var ack = new hl7.Message(
-                              msg.header.getField(3),
-                              msg.header.getField(4),
-                              msg.header.getField(1),
-                              msg.header.getField(2),
-                              "DATEGOESHEREDONTNEEDIT",
-                              '',
-                              ["ACK"],
-                              'ACK' + "ANOTHERDATEDONTNEEDIT",
-                              'T',
-                              '2.5')
-
-        ack.addSegment("MSA", "AA", msg.header.getField(8))
-        return ack.toString();
-      };
-
-      var tcpClient = server.createTcpClient();
-
-      tcpClient.connect('127.0.0.1', 8686);
-
-      tcpClient.send(adt, function(ack) {
-        tcpClient.close();
-        assert.equal('MSH|^~\\&|SMS|SMSADT|EPIC|EPICADT|DATEGOESHEREDONTNEEDIT||ACK|ACKANOTHERDATEDONTNEEDIT|T|2.5\rMSA|AA|1817457', ack.toString())
-        done()
-      })
-    });
-
   });
 
   describe('.stop()', function() {
