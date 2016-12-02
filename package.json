@@ -28,6 +28,7 @@
   "homepage": "https://github.com/hitgeek/simple-hl7#readme",
   "dependencies": {
     "moment": "^2.10.3",
+    "utils-merge": "^1.0.0",
     "watch": "^0.16.0"
   }
 }

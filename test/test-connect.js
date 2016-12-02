@@ -10,6 +10,60 @@ var VT = String.fromCharCode(0x0b);
 var FS = String.fromCharCode(0x1c);
 var CR = String.fromCharCode(0x0d);
 
+describe('file', function() {
+
+  describe('.start()', function() {
+    this.timeout(10000);
+    it('should start the file server listening on a folder, and emit event on new file', function(done) {
+      fs.mkdirSync('test/import');
+      var hl7TestMessage = fs.readFileSync('test/samples/adt.hl7').toString().replace(/\r?\n/g, "\r");
+
+      var app = hl7.file();
+
+      app.use(function(req, res, next) {
+        console.log('message recieved');
+        assert.equal(req.msg.toString(), hl7TestMessage);
+        next();
+      });
+
+      app.use(function() { return false; }, function(req, res, next) {
+        req.shouldNotBeHere = true;
+        next();
+      });
+
+      app.use(function(req, res, next) {
+        req.shouldBeHere = true;
+        next()
+      });
+
+      app.use(function(req, res, next) {
+        assert(req.shouldBeHere);
+        assert(!req.shouldNotBeHere);
+        next();
+      });
+
+      app.use(function(req, res) {
+        fs.unlinkSync(req.file);
+        fs.rmdirSync('test/import');
+        done();
+      });
+
+      app.use(function(err, req, res) {
+        console.log(err);
+      });
+
+      var __server = app.start('test/import')
+
+      setTimeout(function() {
+        console.log('sending file..');
+        fs.writeFileSync('test/import/adt.hl7', hl7TestMessage);
+      }, 1000);
+
+    });
+  });
+});
+
+
 describe('tcp', function() {
   var tcpServer
   describe('.start()', function() {
@@ -27,7 +81,7 @@ describe('tcp', function() {
         next();
       });
 
-      app.use(() => false, function(req, res, next) {
+      app.use(function() { return false; }, function(req, res, next) {
         req.shouldNotBeHere = true;
         next();
       });
