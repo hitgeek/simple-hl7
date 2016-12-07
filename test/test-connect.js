@@ -23,32 +23,40 @@ describe('file', function() {
       app.use(function(req, res, next) {
         console.log('message recieved');
         assert.equal(req.msg.toString(), hl7TestMessage);
+        assert.equal(req.sender, 'EPIC');
+        assert.equal(req.facility, 'EPICADT');
+        assert.equal(req.type, 'ADT');
+        assert.equal(req.event, 'A04');
         next();
       });
 
       app.use(function() { return false; }, function(req, res, next) {
         req.shouldNotBeHere = true;
+        console.log(1)
         next();
       });
 
       app.use(function(req, res, next) {
         req.shouldBeHere = true;
+        console.log(2)
         next()
       });
 
       app.use(function(req, res, next) {
         assert(req.shouldBeHere);
         assert(!req.shouldNotBeHere);
+        console.log(3)
         next();
       });
 
       app.use(function(req, res) {
         fs.unlinkSync(req.file);
-        fs.rmdirSync('test/import');
+        console.log(4)
         done();
       });
 
       app.use(function(err, req, res) {
+        console.log(5)
         console.log(err);
       });
 
@@ -78,6 +86,13 @@ describe('tcp', function() {
         assert(req.msg);
         assert(res.ack);
         assert(res.end);
+
+
+        assert.equal(req.sender, 'EPIC');
+        assert.equal(req.facility, 'EPICADT');
+        assert.equal(req.type, 'ADT');
+        assert.equal(req.event, 'A04');
+
         next();
       });
 
