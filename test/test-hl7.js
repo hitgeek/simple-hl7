@@ -1,11 +1,12 @@
 var assert     = require("assert")
-var component  = require('../lib/hl7/component.js');
-var field      = require('../lib/hl7/field.js');
+var component  = require('../lib/hl7/component');
+var delimiters = require('../lib/hl7/delimiters')
+var field      = require('../lib/hl7/field');
 var fs         = require('fs');
-var header     = require('../lib/hl7/header.js');
-var message    = require('../lib/hl7/message.js');
-var Parser     = require('../lib/hl7/parser.js');
-var segment    = require('../lib/hl7/segment.js');
+var header     = require('../lib/hl7/header');
+var message    = require('../lib/hl7/message');
+var Parser     = require('../lib/hl7/parser');
+var segment    = require('../lib/hl7/segment');
 
 var delimiters = {
   subcomponentSeperator: "&",
@@ -104,20 +105,39 @@ describe("Segment", function() {
       assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 3");
     });
   });
-  describe('.getField()', function() {
+  describe('.getField(x)', function() {
     it('should return a single field from the field value array', function() {
       var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.getField(2), "Field 2");
-      assert.equal(simpleSegment.getField(3)[0], "Component 1");
-
+      assert.equal(simpleSegment.getField(3), "Component 1^Component 2");
+      assert.equal(simpleSegment.getField(5), "");
     });
   });
-  describe('.getComponent()', function(){
+  describe('.getField(x, z)', function() {
+    it('should return a repeating field value', function() {
+      var simpleSegment = new segment("NME");
+      simpleSegment.fields.push(new field("One", "Two"));
+
+      assert.equal(simpleSegment.getField(1, 1), "One");
+      assert.equal(simpleSegment.getField(1, 2), "Two");
+    });
+  });
+  describe('.getComponent(x)', function(){
     it('should return the component at index', function() {
       var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
-      var c = simpleSegment.getComponent(3, 1);
-      assert.equal(c, "Component 1");
+      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
+      assert.equal(simpleSegment.getComponent(3, 2), "Component 2");
+      assert.equal(simpleSegment.getComponent(3, 3), "");
+    });
+  });
+  describe('.getComponent(x, z)', function(){
+    it('should return the sub component at index', function() {
+      var simpleSegment = new segment("NME", ["Component 1", ["Sub1", "Sub2"]]);
+
+      assert.equal(simpleSegment.getComponent(1, 2, 1), "Sub1");
+      assert.equal(simpleSegment.getComponent(1, 2, 2), "Sub2");
+      assert.equal(simpleSegment.getComponent(1, 2, 3), "");
     });
   });
 });
@@ -177,7 +197,7 @@ describe("Header", function() {
       var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.getField(2), "Field 2");
-      assert.equal(simpleSegment.getField(3)[0], "Component 1");
+      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
 
     });
   });
@@ -240,6 +260,8 @@ describe("Parser", function() {
     it('should parse message with different segment seperators', function() {
       var msg1 = "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2"
       var msg2 = "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2"
+
+      var x = parser.parse(msg1);
 
       assert.equal(parser.parse(msg1).segments.length, 1);
       assert.equal(new Parser({segmentSeperator: '\n'}).parse(msg2).segments.length, 1);
