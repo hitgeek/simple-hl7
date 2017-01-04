@@ -21,7 +21,6 @@ describe('file', function() {
       var app = hl7.file();
 
       app.use(function(req, res, next) {
-        console.log('message recieved');
         assert.equal(req.msg.toString(), hl7TestMessage);
         assert.equal(req.sender, 'EPIC');
         assert.equal(req.facility, 'EPICADT');
@@ -30,43 +29,49 @@ describe('file', function() {
         next();
       });
 
-      app.use(function() { return false; }, function(req, res, next) {
+      app.use(function(req, res, next) {
+        return next();
         req.shouldNotBeHere = true;
-        console.log(1)
         next();
       });
 
       app.use(function(req, res, next) {
         req.shouldBeHere = true;
-        console.log(2)
         next()
       });
 
       app.use(function(req, res, next) {
         assert(req.shouldBeHere);
         assert(!req.shouldNotBeHere);
-        console.log(3)
         next();
       });
 
       app.use(function(req, res) {
         fs.unlinkSync(req.file);
-        console.log(4)
         done();
       });
 
       app.use(function(err, req, res) {
-        console.log(5)
+        assert(!err);
         console.log(err);
       });
 
       var __server = app.start('test/import')
 
       setTimeout(function() {
-        console.log('sending file..');
         fs.writeFileSync('test/import/adt.hl7', hl7TestMessage);
       }, 1000);
 
+    });
+    describe('.stop()', function() {
+      it('should stop server', function(done) {
+        var app = hl7.file();
+        app.start('test');
+        setTimeout(function() {
+            app.stop();
+            done();
+        }, 1000)
+      });
     });
   });
 });
@@ -96,7 +101,8 @@ describe('tcp', function() {
         next();
       });
 
-      app.use(function() { return false; }, function(req, res, next) {
+      app.use(function(req, res, next) {
+        return next();
         req.shouldNotBeHere = true;
         next();
       });
@@ -117,17 +123,24 @@ describe('tcp', function() {
       var __server = app.start(8787);
 
       setTimeout(function() {
-        var tcpClient = server.createTcpClient();
-
-        tcpClient.connect('127.0.0.1', 8787);
+        var tcpClient = server.createTcpClient('127.0.0.1', 8787);
 
         tcpClient.send(adt, function(ack) {
-          tcpClient.close();
           __server.stop();
           done();
         });
       }, 1000);
 
+    });
+    describe('.stop()', function() {
+      it('should stop server', function(done) {
+        var app = hl7.tcp();
+        app.start(9999);
+        setTimeout(function() {
+            app.stop();
+            done();
+        }, 1000)
+      });
     });
   });
 });
