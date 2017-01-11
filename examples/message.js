@@ -51,7 +51,7 @@ adt.addSegment("OBX",
 
 
 
-console.log(adt.toString());
+console.log(adt.log());
 
 /*
 MSH|^~\&|EPIC|EPICADT|SMS|199912271408|CHARRIS|ADT^A04
@@ -74,7 +74,7 @@ Segment objects expose .editField, .addField, and .removeField
 
 msg.getSegment("PID").editField(6, "19580302");
 
-console.log(msg.toString());
+console.log(msg.log());
 
 
 console.log('-----Lets use Get Segments to look for Abnormal Values----')
@@ -89,8 +89,6 @@ msg.getSegments("OBX").forEach(function(segment) {
   if (result < lowRange) {
     console.log(testName + " was low. Result: " + result + ", Low Range: " + lowRange);
   }
-
-
 });
 
 
