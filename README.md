@@ -1,6 +1,8 @@
 # simple-hl7
 ![Image Build Status](https://travis-ci.org/hitgeek/simple-hl7.svg?branch=master)
 
+## ----- VERSION 2 IS RELEASED (NEW API) -----
+
 A simple library for creating HL7 middleware, based on connect & express.
 
 
@@ -84,6 +86,10 @@ Make HL7 interfaces and middleware as easy as express web servers.
 ## Examples
 See examples & tests folder on github.
 
+## Compatability
+Version 2 is not backwards compatible with Version 1 and comes with a bunch of great new and more consistent APIs
+
+Version 1 will get bug fixes if anything comes up.
 
 ## People
 Author: Bob Rupp bob@rupp.io
