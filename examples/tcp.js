@@ -45,21 +45,39 @@ console.log('tcp interface listening on ' + 7777);
 
 ////////////////////CLIENT///////////////////
 var parser = new hl7.Parser({segmentSeperator: '\n'});
-var client = hl7.Server.createTcpClient('localhost', 7777);
+var client = hl7.Server.createTcpClient({
+  host: 'localhost',
+  port: 7777,
+  callback: function(err, ack) {
+    if (err) {
+      console.log("*******ERROR********");
+      console.log(err.message);
+    } else {
+      console.log(ack.log());
+    }
+  }
+});
+
 var msg = parser.parseFileSync('test/samples/adt.hl7');
 
-console.log('************sending message****************');
+console.log('************sending 1 message****************');
+client.send(msg);
 
-client.send(msg, function(err, ack) {
-  if (err) {
-    console.log("ERR: " + err.message);
-  } else {
-    console.log('ACK Recieved');
-    //use log to print to console
-    //default segment seperator is \r which does not print nice to console
-    //log temporarily overrides the segment seperator to \n
-    console.log(ack.log());
-  }
-})
+setTimeout(function() {
+  console.log('2');
+  console.log('************sending 2 message****************');
+  client.send(msg);
+}, 1000);
+
+setTimeout(function() {
+  console.log('************sending 3 message****************');
+  client.send(msg);
+}, 2000);
+
+
+setTimeout(function() {
+  process.exit();
+}, 5000)
+
 ////////////////////CLIENT///////////////////
 

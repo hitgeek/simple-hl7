@@ -87,7 +87,7 @@ describe('TcpServer', function() {
       tcpServer.start(8686);
 
       setTimeout(function() {
-        var tcpClient = server.createTcpClient('127.0.0.1', 8686);
+        var tcpClient = server.createTcpClient({ host: '127.0.0.1', port:  8686 });
 
         tcpClient.send(adt, function(ack) {
           done();
@@ -114,6 +114,25 @@ describe('TcpServer', function() {
         setTimeout(function() {
           rawTcpClient.write(part2 + FS + CR);
         }, 2000)
+      }, 1000);
+    });
+    it('should keep connection open and still work', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+
+      setTimeout(function() {
+        var tcpClient = server.createTcpClient({ host: '127.0.0.1', port:  8686, keepalive: true });
+
+        tcpClient.send(adt, function(ack) {
+          setTimeout(function() {
+            setTimeout(function() {
+              tcpClient.send(adt, function(ack) {
+                tcpClient.close();
+                done();
+              });
+            }, 1000);
+          });
+        });
       }, 1000);
     });
   });
