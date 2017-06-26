@@ -48,6 +48,7 @@ var parser = new hl7.Parser({segmentSeperator: '\n'});
 var client = hl7.Server.createTcpClient({
   host: 'localhost',
   port: 7777,
+  keepalive: true,
   callback: function(err, ack) {
     if (err) {
       console.log("*******ERROR********");
