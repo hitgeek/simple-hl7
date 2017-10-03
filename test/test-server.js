@@ -135,6 +135,15 @@ describe('TcpServer', function() {
         });
       }, 1000);
     });
+    it('should handle no server', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+      var tcpClient = server.createTcpClient({ host: '127.0.0.1', port:  9999, keepalive: true });
+      tcpClient.send(adt, function(err) {
+        console.log('here is the error ' + err.message);
+        done();
+      });
+    });
   });
 
   describe('.stop()', function() {
