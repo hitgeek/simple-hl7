@@ -12,7 +12,7 @@ var app = hl7.tcp();
 
 app.use(function(req, res, next) {
   //req.msg is the HL7 message
-  console.log('******message recieved*****')
+  console.log('******message received*****')
   console.log(req.msg.log());
   next();
 })
@@ -59,7 +59,7 @@ var msg = new hl7.Message(
 
 console.log('******sending message*****')
 client.send(msg, function(err, ack) {
-  console.log('******ack recieved*****')
+  console.log('******ack received*****')
   console.log(ack.log());
 });
 ///////////////////CLIENT/////////////////////
