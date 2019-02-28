@@ -83,13 +83,13 @@ describe("Segment", function() {
       assert.equal(segmentWithNoFields.toString(delimiters), "NME|Field Value|Component 1^Component 2|Field Value");
     });
   });
-  describe(".editField()", function() {
+  describe(".setField()", function() {
     it('should swap a field at certain index, check using toString()', function() {
       var simpleSegment = new segment("NME", "Field 1", "Field 2", "Field 3");
 
       assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 2|Field 3");
 
-      simpleSegment.editField(2, ["Component 1", "Component 2"]);
+      simpleSegment.setField(2, ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Component 1^Component 2|Field 3");
     });
@@ -140,6 +140,16 @@ describe("Segment", function() {
       assert.equal(simpleSegment.getComponent(1, 2, 3), "");
     });
   });
+  describe('.setComponent(x, v)', function(){
+    it('should return the component at index', function() {
+      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2", ["Sub1", "Sub2"]]);
+      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
+      simpleSegment.setComponent(3, 1, "Component 1 Update");
+      assert.equal(simpleSegment.getComponent(3, 1), "Component 1 Update");
+      simpleSegment.setComponent(3, 3, [ "Sub1 Update", "Sub2 Update" ]);
+      assert.equal(simpleSegment.getComponent(3, 3), "Sub1 Update&Sub2 Update");
+    });
+  });
 });
 
 describe("Header", function() {
@@ -170,13 +180,13 @@ describe("Header", function() {
       assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2|Field Value");
     });
   });
-  describe(".editField()", function() {
+  describe(".setField()", function() {
     it('should swap a field at certain index, check using toString()', function() {
       var simpleSegment = new header("Field 1", "Field 2", "Field 3");
 
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
 
-      simpleSegment.editField(2, ["Component 1", "Component 2"]);
+      simpleSegment.setField(2, ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Component 1^Component 2|Field 3");
     });
@@ -233,7 +243,7 @@ describe("Message", function() {
 
       assert.equal(segmentFromMessage.toString(delimiters), "NME|Field 1|Field 2");
 
-      segmentFromMessage.editField(1, ["Component 1", "Component 2"]);
+      segmentFromMessage.setField(1, ["Component 1", "Component 2"]);
 
       assert.equal(segmentFromMessage.toString(delimiters), "NME|Component 1^Component 2|Field 2");
       assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2");

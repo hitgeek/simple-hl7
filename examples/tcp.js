@@ -32,7 +32,7 @@ app.use(function(req, res, next) {
 //Error Handler
 app.use(function(err, req, res, next) {
   var msa = res.ack.getSegment('MSA');
-  msa.editField(1, 'AR');
+  msa.setField(1, 'AR');
   res.ack.addSegment('ERR', err.message);
   res.end();
 });
