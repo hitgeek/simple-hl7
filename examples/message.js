@@ -25,7 +25,8 @@ adt.addSegment("PID",
             "454721",
             "",
             ["DOE", "JOHN", "", "", "", ""],
-            "19480203"
+            "19480203",
+            new hl7.Field("First", "Second")
             //Keep adding arguments to add more fields
         );
 
@@ -72,7 +73,7 @@ Message.getSegment() takes the Segment name as argument, and returns a Segment o
 Segment objects expose .editField, .addField, and .removeField
 */
 
-msg.getSegment("PID").editField(6, "19580302");
+msg.getSegment("PID").setField(6, "19580302");
 
 console.log(msg.log());
 
