@@ -26,9 +26,15 @@ adt.addSegment("PID",
             "",
             ["DOE", "JOHN", "", "", "", ""],
             "19480203",
-            new hl7.Field("First", "Second")
+            new hl7.Field("First", "Second") //REPEATING FIELD
             //Keep adding arguments to add more fields
         );
+  
+var pid = adt.getSegment("PID");
+pid.addField(new hl7.Field("First", "Second"), 8);
+
+
+pid.fields.push(new hl7.Field("First", "Second"));
 
 
 adt.addSegment("OBX",
