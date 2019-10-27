@@ -76,7 +76,7 @@ var msg = parser.parse(adt.toString());
 
 /*
 Message.getSegment() takes the Segment name as argument, and returns a Segment object.
-Segment objects expose .editField, .addField, and .removeField
+Segment objects expose .setField, .addField, and .removeField
 */
 
 msg.getSegment("PID").setField(6, "19580302");
