@@ -38,8 +38,17 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.start(7777);
+var server = app.start(7777);
 console.log('tcp interface listening on ' + 7777);
+
+// Special handling for connect and close events on the socket.
+server.on('connect', function (socket) {
+  console.log('Client connected from ' + socket.remoteAddress + ':' + socker.remotePort)
+})
+server.on('close', function (socket) {
+  console.log('Client disconnected from ' + socket.remoteAddress + ':' + socker.remotePort)
+})
+
 ////////////////////SERVER///////////////////
 
 
