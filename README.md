@@ -38,7 +38,7 @@ app.use(function(err, req, res, next) {
 });
 
 //Listen on port 7777
-app.start(7777);
+app.start(7777); //optionally pass encoding here, app.start(1234, 'latin-1');
 ///////////////////SERVER/////////////////////
 
 ///////////////////CLIENT/////////////////////
