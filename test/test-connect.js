@@ -5,7 +5,6 @@ var net    = require('net');
 var path   = require('path');
 var server = hl7.Server;
 
-
 var VT = String.fromCharCode(0x0b);
 var FS = String.fromCharCode(0x1c);
 var CR = String.fromCharCode(0x0d);
@@ -62,6 +61,10 @@ describe('file', function() {
         fs.writeFileSync('test/import/adt.hl7', hl7TestMessage);
       }, 1000);
 
+      setTimeout(function() {
+        app.stop();
+      }, 3000);
+
     });
     describe('.stop()', function() {
       it('should stop server', function(done) {
@@ -69,8 +72,9 @@ describe('file', function() {
         app.start('test');
         setTimeout(function() {
             app.stop();
+            console.log('app stopped');
             done();
-        }, 1000)
+        }, 6000)
       });
     });
   });
