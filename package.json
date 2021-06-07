@@ -1,6 +1,6 @@
 {
   "name": "simple-hl7",
-  "version": "3.2.2",
+  "version": "4.0.0-beta",
   "description": "simple library for creating and parsing hl7 messages",
   "main": "lib/index.js",
   "directories": {
@@ -24,10 +24,5 @@
   "bugs": {
     "url": "https://github.com/hitgeek/simple-hl7/issues"
   },
-  "homepage": "https://github.com/hitgeek/simple-hl7#readme",
-  "dependencies": {
-    "moment": "2.24.0",
-    "utils-merge": "1.0.0",
-    "watch": "0.16.0"
-  }
+  "homepage": "https://github.com/hitgeek/simple-hl7#readme"
 }
