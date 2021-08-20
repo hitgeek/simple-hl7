@@ -91,7 +91,7 @@ describe('tcp', function() {
         assert(req.msg);
         assert(res.ack);
         assert(res.end);
-
+        assert.equal(res.socket.localPort, 8787);
 
         assert.equal(req.sender, 'EPIC');
         assert.equal(req.facility, 'EPICADT');
