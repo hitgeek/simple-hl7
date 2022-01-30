@@ -180,6 +180,22 @@ describe("Header", function() {
       assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2|Field Value");
     });
   });
+  describe(".addHeaderField()", function() {
+    it('should add a field, check using toString()', function() {
+      var segmentWithNoFields = new header();
+      segmentWithNoFields.addHeaderField("Field Value", 3);
+
+      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value");
+
+      segmentWithNoFields.addHeaderField(["Component 1", "Component 2"], 4);
+
+      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2");
+
+      segmentWithNoFields.addHeaderField("Field Value", 5);
+
+      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2|Field Value");
+    });
+  });
   describe(".setField()", function() {
     it('should swap a field at certain index, check using toString()', function() {
       var simpleSegment = new header("Field 1", "Field 2", "Field 3");
@@ -187,6 +203,17 @@ describe("Header", function() {
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
 
       simpleSegment.setField(2, ["Component 1", "Component 2"]);
+
+      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Component 1^Component 2|Field 3");
+    });
+  });
+  describe(".setHeaderField()", function() {
+    it('should swap a field at certain index, check using toString()', function() {
+      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+
+      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+
+      simpleSegment.setHeaderField(4, ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Component 1^Component 2|Field 3");
     });
@@ -202,13 +229,31 @@ describe("Header", function() {
       assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 3");
     });
   });
+  describe(".removeHeaderField()", function() {
+    it('should remove a field, not sure why you would do this, check using toString()', function() {
+      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+
+      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+
+      simpleSegment.removeHeaderField(4);
+
+      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 3");
+    });
+  });
   describe('.getField()', function() {
     it('should return a single field from the field value array', function() {
       var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
 
       assert.equal(simpleSegment.getField(2), "Field 2");
       assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
+    });
+  });
+  describe('.getHeaderField()', function() {
+    it('should return a single field from the field value array', function() {
+      var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
 
+      assert.equal(simpleSegment.getHeaderField(4), "Field 2");
+      assert.equal(simpleSegment.getHeaderComponent(5, 1), "Component 1");
     });
   });
 });

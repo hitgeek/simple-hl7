@@ -24,5 +24,10 @@
   "bugs": {
     "url": "https://github.com/hitgeek/simple-hl7/issues"
   },
-  "homepage": "https://github.com/hitgeek/simple-hl7#readme"
+  "homepage": "https://github.com/hitgeek/simple-hl7#readme",
+  "dependencies": {
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
+    "moment": "^2.29.1"
+  }
 }

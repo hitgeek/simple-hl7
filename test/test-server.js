@@ -89,7 +89,10 @@ describe('TcpServer', function() {
       setTimeout(function() {
         var tcpClient = server.createTcpClient({ host: '127.0.0.1', port:  8686 });
 
-        tcpClient.send(adt, function(ack) {
+        tcpClient.send(adt, function(err, ack) {
+          console.log(ack.log());
+          assert.equal(ack.header.getHeaderField(11), adt.header.getHeaderField(11))
+          assert.equal(ack.header.getHeaderField(12), adt.header.getHeaderField(12))
           done();
         });
       }, 1000);
