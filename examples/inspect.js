@@ -14,8 +14,4 @@ var msg = parser.parse(adt);
 
 var obj = inspector.inspect(msg);
 
-obj.segments[1].fields.forEach(function(x) {
-    console.log(x);   
-})
-
-
+console.log(obj.segments[1].fields[2]);
