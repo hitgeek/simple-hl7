@@ -1,0 +1,18 @@
+MSH|^~\&|^^|MA0000^^|^^|GA0000^^|20111105122535||RSP^K11^RSP_K11|1320521135996.100000002|T|2.5.1|||||||||Z32^CDCPHINVS^^|
+MSA|AA|19970522GA40||
+QAK|||Z34^Request Immunization History^HL70471|
+QPD|Z34^Request Immunization History^HL70471|19970522GA05||FLOYD^FRANK^^^^^L|MALIFICENT|20030123|M|L|
+PID|1||25^^^^SR~0001||FLOYD^FRANK^^^^^L||20030123|M|||612 S WRIGHT CT^^KENNEWICK^WASHINGTON^99366^United States^M||(509)421-0355^^PH^^^509^4210355^|||||||||||||||||N|
+PD1|||^^^^^^SR|21^MATT^SHAKY^K^^^^^^^^^SR~1679652135|||||||02^Reminder/recall -any method^HL70215|||||A^Active^HL70441|
+NK1|1|FLOYD^MALIFICENT|GRD^Guardian^HL70063|
+PV1||R|
+ORC|RE||25.34.20100723|
+RXA|0|999|20100723|20100723|83^Hep A, ped/adol, 2 dose^CVX^90633^Hep A 2 dose - Ped/Adol^CPT~34^Hep A 2 dose - Ped/Adol^STC0292|
+999|||00^New immunization record^NIP001||IRMS-1000||||AHAVB379AA||SKB^GlaxoSmithKline^HL70227||||A|20111105122536|
+RXR|IM^Intramuscular^HL70162|LT^Left Thigh^HL70163|
+OBX|1|CE|VFC-STATUS^VFC Status^STC||V02||||||F|
+OBX|1|CE|30963-3^Vaccine purchased with^LN||PBF^Public funds^NIP008||||||F|
+OBX|1|CE|VFC-STATUS^VFC Status^STC||||||||F|
+OBX|1|DT|29768-9^date vaccine information statement published^LN||20100120||||||F|
+OBX|1|DT|29769-7^date vaccine information statement presented^LN||20100723||||||F|
+ORC|RE||25.34.20100728|

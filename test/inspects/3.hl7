@@ -1,0 +1,3 @@
+MSH|^~\&|^^|DOE^^|DCC^^|DOE^^|20050829141336||ACK^|1125342816253.100000055|P|2.3.1|
+MSA|AE|00000001|Patient id was not found, must be of type 'MR'|||^^HL70357|
+ERR|PID^1^3^^^HL70357|

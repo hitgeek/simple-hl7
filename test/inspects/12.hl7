@@ -1,0 +1,6 @@
+MSH|^~\&|NextGen Rosetta|BCUC^0001|Billing System|Billing System|20220203184407976||ORM^O01|691368316|P|2.3|||AL|AL
+PID|1|1120|||Test^PT||20060313|M|||123 Park Place^^Horsham^PA^19044||2155551212|||S|||999671234|||||||||||N
+PV1|1|O|||||^Suess MD^Ted|||||||||||||||||||||||||||||||||||||202202031744||||||1023
+GT1|1||Test^PT||123 Park Place^^Horsham^PA^19044|2155551212||20060313|M|P|99|999671234||||||||||||||||||S
+ORC|NW|PRO17|||||^^^^^R||20220203174441|0^Admin^NextGen||^Suess MD^Ted
+OBR|1|PRO17|PRO17|71046^Chest X-Ray 2 Views^R|||||||N|||||^Suess MD^Ted|||||||||||^^^^^R
