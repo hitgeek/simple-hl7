@@ -3,6 +3,7 @@
   "version": "3.2.4",
   "description": "simple library for creating and parsing hl7 messages",
   "main": "lib/index.js",
+  "types": "./types/index.d.ts",
   "directories": {
     "test": "test"
   },
