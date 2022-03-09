@@ -76,73 +76,73 @@ var config = {
 }
 
 var encoder = new Encoder(config);
-var obj = encoder.encode(msg);
+var obj = encoder.decode(msg);
 
 console.log(obj);
 console.log(obj.patient);
 
-var msh = encoder.decode(obj);
+var msh = encoder.encode(obj);
 
 console.log(msh.log());
 
-var config2 = {
-    segments: [
-        { 
-            id: "pid",
-            property: "patient",
-            values: [
-                { path: "id", field: 3, repeats: true, decode: false },
-                { 
-                    path: "ids", repeats: true, values: [
-                        { path: "code", component: [3, 1] },
-                        { path: "type", component: [3, 5] }
-                    ]
-                },
-                { path: "firstName", component: [5, 2] },
-                { path: "lastName", component: [5, 1] },
-                { path: "birthDate", component: [7, 1], type: 'Date'}
-            ]
-        },
-        {
-            id: "nk1",
-            property: "patient.family",
-            values: [
-                { path: "sequence", field: 1 },
-                { path: "firstName", component: [2, 2] },
-                { path: "lastName", component: [2, 1] },
-                { path: "phone", field: 5 }
-            ]
-        },
-        {
-            id: "obr",
-            property: "orders",
-            values: [
-                { path: "sequence", field: 1, type: "Number"},
-                { path: "code", component: [4, 1] },
-                { path: "label", component: [4, 2] }
-            ],
-            segments: [
-                {
-                    id: "obx",
-                    property: "results",
-                    values: [
-                        { path: "sequence", field: 1 },
-                        { path: "code", component: [3, 1] },
-                        { path: "label", component: [3, 2] }
-                    ]
-                }
-            ]
-        }
-    ]
-}
+// var config2 = {
+//     segments: [
+//         { 
+//             id: "pid",
+//             property: "patient",
+//             values: [
+//                 { path: "id", field: 3, repeats: true, decode: false },
+//                 { 
+//                     path: "ids", repeats: true, values: [
+//                         { path: "code", component: [3, 1] },
+//                         { path: "type", component: [3, 5] }
+//                     ]
+//                 },
+//                 { path: "firstName", component: [5, 2] },
+//                 { path: "lastName", component: [5, 1] },
+//                 { path: "birthDate", component: [7, 1], type: 'Date'}
+//             ]
+//         },
+//         {
+//             id: "nk1",
+//             property: "patient.family",
+//             values: [
+//                 { path: "sequence", field: 1 },
+//                 { path: "firstName", component: [2, 2] },
+//                 { path: "lastName", component: [2, 1] },
+//                 { path: "phone", field: 5 }
+//             ]
+//         },
+//         {
+//             id: "obr",
+//             property: "orders",
+//             values: [
+//                 { path: "sequence", field: 1, type: "Number"},
+//                 { path: "code", component: [4, 1] },
+//                 { path: "label", component: [4, 2] }
+//             ],
+//             segments: [
+//                 {
+//                     id: "obx",
+//                     property: "results",
+//                     values: [
+//                         { path: "sequence", field: 1 },
+//                         { path: "code", component: [3, 1] },
+//                         { path: "label", component: [3, 2] }
+//                     ]
+//                 }
+//             ]
+//         }
+//     ]
+// }
 
-encoder = new Encoder(config2);
-var obj2 = encoder.encode(msg2);
+// var encoder = new Encoder(config2);
+// var obj2 = encoder.decode(msg2);
 
-console.log(obj2.patient);
+// console.log(obj2.orders[0]);
 
-var msh2 = encoder.decode(obj2);
+// // var msh2 = encoder.decode(obj2);
 
-var msh2 = encoder.decode(obj2);
+// var msh2 = encoder.encode(obj2);
 
-console.log(msh2.log());
+// console.log(msh2.log());
