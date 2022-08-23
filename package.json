@@ -7,7 +7,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "mocha": "6.0.2"
+    "mocha": "^6.2.3"
   },
   "scripts": {
     "test": "mocha"
@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/hitgeek/simple-hl7#readme",
   "dependencies": {
-    "moment": "2.24.0",
+    "dayjs": "^1.11.5",
     "utils-merge": "1.0.0",
-    "watch": "0.16.0"
+    "watch": "^0.13.0"
   }
 }
