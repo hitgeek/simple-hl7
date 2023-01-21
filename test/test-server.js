@@ -151,5 +151,42 @@ describe('TcpServer', function() {
       tcpServer.stop()
     });
   });
+
+  describe('TLS support', function() {
+    it('should start and stop TLS enabled tcp server listenting on specified port', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+
+      tcpServer = server.createTcpServer(function(err, req, res) {
+      });
+
+      tcpServer.start(8686,undefined,{key:'test/test-key.pem',cert:'test/test-cert.pem'});
+
+      tcpServer.stop();
+
+      done();
+    });
+    it('should respond to messages sent over TLS', function(done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+
+      tcpServer = server.createTcpServer(function(err, req, res) {
+        res.end();
+      });
+
+      tcpServer.start(8686,undefined,{key:'test/test-key.pem',cert:'test/test-cert.pem'});
+
+      setTimeout(function() {
+        var tcpClient = server.createTcpClient({ host: '127.0.0.1', port:  8686, tls: true });
+
+        tcpClient.send(adt, function(ack) {
+          done();
+        });
+      }, 1000);
+
+      tcpServer.stop();
+    });
+
+  })
 });
 
