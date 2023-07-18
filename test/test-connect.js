@@ -136,6 +136,34 @@ describe('tcp', function() {
       }, 1000);
 
     });
+    it('should handle invalid data', function(done) {
+      var app = hl7.tcp();
+      var reqWasNull
+
+      app.use(function(req, res, next) {
+        reqWasNull = req == null;
+        res.socket.emit('error', new Error());
+      });
+
+      app.use(function(err, req, res, next) {
+        console.log(err);
+      });
+
+      var __server = app.start(8788);
+ 
+      var client = new net.Socket();
+      client.connect(8788, '127.0.0.1', function() {
+        client.write('H' + FS + CR);
+        setTimeout(function() {
+          client.destroy();
+          __server.stop();
+          assert(!reqWasNull);
+          done();
+        }, 3000)
+        
+      });
+
+    })
     describe('.stop()', function() {
       it('should stop server', function(done) {
         var app = hl7.tcp();
