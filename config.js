@@ -1,0 +1,24 @@
+module.exports = [
+	{
+		port: 7777,
+		name: 'Dignity Health',
+		sending_facility: 'DIGNITY_HEALTH',
+		allowed_message_types: ['ADT'],
+		allowed_message_events: ['A02', 'A03', 'A04', 'A05', 'A08'],
+		pid: {
+			name_segment: 5,
+			dob_segment: 7,
+			sex_segment: 8,
+			address_segment: 11,
+			email_segment: 15,
+			home_phone_segment: 13,
+			cell_phone_segment: 14,
+			language_segment: 16,
+		},
+		nk1: {
+			name_segment: 2,
+			home_phone_segment: 5,
+			cell_phone_segment: 7,
+		},
+	},
+];

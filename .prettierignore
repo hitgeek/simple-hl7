@@ -1,0 +1,13 @@
+node_modules
+# Ignore artifacts:
+build
+coverage
+node_modules
+public
+.scribe
+vendor
+storage
+.github
+.git
+bootstrap
+resources/views
