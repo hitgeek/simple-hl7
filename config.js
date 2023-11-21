@@ -1,6 +1,8 @@
+// Ports should be limited to 7700-7799
+
 module.exports = [
 	{
-		port: 7777,
+		port: 7700,
 		name: 'Dignity Health',
 		sending_facility: 'DIGNITY_HEALTH',
 		allowed_message_types: ['ADT'],
