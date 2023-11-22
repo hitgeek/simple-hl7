@@ -4,7 +4,7 @@ var Parser = require('../lib/hl7/parser');
 // do not remove this line... it is used to test the server
 require('../lib/index');
 
-var client = hl7.Server.createTcpClient('localhost', 7777);
+var client = hl7.Server.createTcpClient('localhost', 7700);
 
 //create a message
 var msgString =
