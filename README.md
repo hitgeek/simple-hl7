@@ -31,6 +31,10 @@ NodeJS application serving as an HL7 inbound interface for handling HL7 messages
 
 ## Running the App
 
+### Sensitive keys
+Create a .env file at the root of the project. 
+All keys in the file will be accessible at process.env.YOUR_KEY.
+
 ### Creating a New Interface
 Update `config.json` and restart the application for new interfaces.
 
