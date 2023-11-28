@@ -2,6 +2,7 @@
 
 module.exports = [
 	{
+		practice_id: '6282490b-f7e0-40ec-a34d-dac3014453a2',
 		port: 7700,
 		name: 'Dignity Health',
 		sending_facility: 'DIGNITY_HEALTH',
