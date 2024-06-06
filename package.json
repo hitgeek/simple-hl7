@@ -1,13 +1,13 @@
 {
   "name": "simple-hl7",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.1",
   "description": "simple library for creating and parsing hl7 messages",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
   "devDependencies": {
-    "mocha": "6.0.2"
+    "mocha": "10.4.0"
   },
   "scripts": {
     "test": "mocha"
@@ -26,8 +26,7 @@
   },
   "homepage": "https://github.com/hitgeek/simple-hl7#readme",
   "dependencies": {
-    "lodash.get": "^4.4.2",
-    "lodash.set": "^4.3.2",
-    "moment": "^2.29.1"
+    "dayjs": "^1.11.11",
+    "lodash": "^4.17.21"
   }
 }
