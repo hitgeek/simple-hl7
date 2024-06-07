@@ -1,5 +1,5 @@
 # simple-hl7
-![Image Build Status](https://travis-ci.org/hitgeek/simple-hl7.svg?branch=master)
+[![Node.js CI](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml/badge.svg?branch=v4.0)](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml)
 
 A simple library for creating HL7 middleware, based on connect & express.
 
