@@ -1,5 +1,5 @@
 # simple-hl7
-[![Node.js CI](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml/badge.svg?branch=v4.0)](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml)
+[![Node.js CI](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml/badge.svg?branch=v4.0&event=push)](https://github.com/hitgeek/simple-hl7/actions/workflows/test.yml)
 
 A simple library for creating HL7 middleware, based on connect & express.
 
