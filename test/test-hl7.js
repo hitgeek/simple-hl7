@@ -139,6 +139,17 @@ describe("Segment", function() {
       assert.equal(simpleSegment.getComponent(1, 2, 2), "Sub2");
       assert.equal(simpleSegment.getComponent(1, 2, 3), "");
     });
+    it('should return the sub component at index 1', function() {
+      var rawMessage1 = "MSH|^~\\&|\rNME|^foo&";
+      var message1 = parser.parse(rawMessage1);
+      var segment1 = message1.getSegment("NME");
+      assert.equal(segment1.getComponent(1, 2, 1), "foo");
+
+      var rawMessage2 = "MSH|^~\\&|\rNME|^foo";
+      var message2 = parser.parse(rawMessage2);
+      var segment2 = message2.getSegment("NME");
+      assert.equal(segment2.getComponent(1, 2, 1), "foo");
+    });
   });
   describe('.setComponent(x, v)', function(){
     it('should return the component at index', function() {
