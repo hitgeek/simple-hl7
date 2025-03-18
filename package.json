@@ -7,10 +7,12 @@
     "test": "test"
   },
   "devDependencies": {
-    "mocha": "10.4.0"
+    "mocha": "11.1.0",
+    "prettier": "^3.5.3"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "prettier": "prettier --write \"**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,7 @@
   },
   "homepage": "https://github.com/hitgeek/simple-hl7#readme",
   "dependencies": {
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.13",
     "lodash": "^4.17.21"
   }
 }
