@@ -42,7 +42,7 @@ describe('Encoder', function () {
     it('should encode an ADT to object', function () {
       var encoder = new hl7.Encoder(config);
       var obj = encoder.decode(adt);
-      msg = encoder.encode(obj);
+      var msg = encoder.encode(obj);
       console.log(msg.log());
     });
   });
