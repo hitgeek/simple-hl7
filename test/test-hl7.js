@@ -16,23 +16,10 @@ describe('Component', function () {
       var singleComponent = new component('Single Component');
       var componentWithSubcomponents = new component(['First Component', 'Second Component']);
 
-      // Test with repeating components
-      // This is old behavior that should be removed
-      var repeatingComponent = new component('First Repeat', 'Second Repeat');
-      var repeatingComponentWithSubComponents = new component(
-        ['First Component', 'Second Component'],
-        ['First Repeat', 'Second Repeat'],
-      );
-
       assert.equal(singleComponent.toString(delimiters), 'Single Component');
       assert.equal(
         componentWithSubcomponents.toString(delimiters),
         'First Component&Second Component',
-      );
-      assert.equal(repeatingComponent.toString(delimiters), 'First Repeat~Second Repeat');
-      assert.equal(
-        repeatingComponentWithSubComponents.toString(delimiters),
-        'First Component&Second Component~First Repeat&Second Repeat',
       );
     });
   });
@@ -148,6 +135,17 @@ describe('Segment', function () {
       simpleSegment.removeField(2);
 
       assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 3');
+    });
+  });
+  describe('.clearField()', function () {
+    it('should clear a field, check using toString()', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', 'Field 3');
+
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 2|Field 3');
+
+      simpleSegment.clearField(2);
+
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1||Field 3');
     });
   });
   describe('.getField(x)', function () {
@@ -476,7 +474,7 @@ describe('Parser', function () {
       assert.equal(new Parser({ segmentSeperator: '\n' }).parse(msg2).segments.length, 1);
     });
 
-    it.skip('should correctly parse subcomponents from strings', function () {
+    it('should correctly parse subcomponents from strings', function () {
       // Parse a message with subcomponents
       var rawMessage = 'MSH|^~\\&|\rABC|Value1^Value2&Value3&Value4^Value5';
       var parsedMessage = parser.parse(rawMessage);
@@ -489,6 +487,7 @@ describe('Parser', function () {
       // Verify field as whole component structure
       assert.equal(segment.getComponent(1, 2), 'Value2&Value3&Value4');
       assert.equal(segment.getFieldComponent(1, 1), 'Value1^Value2&Value3&Value4^Value5');
+      assert.equal(segment.getFieldComponent(1, 1, 2), 'Value2&Value3&Value4');
       assert.equal(segment.getFieldComponent(1, 1, 2, 2), 'Value3');
       assert.equal(segment.getComponent(1, 1), 'Value1');
       assert.equal(segment.getComponent(1, 3), 'Value5');
@@ -504,7 +503,7 @@ describe('Parser', function () {
       assert.equal(segment.getField(1, 2), 'Value2^Value3');
       assert.equal(segment.getField(2), 'Value4^Value5~Value6');
     });
-    it.skip('should correctly parse repeating components with subcomponents', function () {
+    it('should correctly parse repeating components with subcomponents', function () {
       // Parse a message with repeating components and subcomponents
       var rawMessage = 'MSH|^~\\&|\rABC|Value1^Value2~Value3&Value4^Value5~Value6&Value7&Value8';
       var parsedMessage = parser.parse(rawMessage);
@@ -512,7 +511,7 @@ describe('Parser', function () {
 
       // Test accessing individual repeating components with subcomponents
       assert.equal(segment.getFieldComponent(1, 1, 2), 'Value2');
-      assert.equal(segment.getFieldComponent(1, 2, 2), 'Value3');
+      assert.equal(segment.getFieldComponent(1, 2, 2), 'Value5');
       assert.equal(segment.getFieldComponent(1, 2, 1, 2), 'Value4');
     });
   });
