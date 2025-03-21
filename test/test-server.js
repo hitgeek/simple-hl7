@@ -14,7 +14,6 @@ describe('FileServer', function() {
   var fileServer;
   describe('.start()', function() {
     this.timeout(10000);
-    fs.mkdirSync('test/import');
     it('should start the file server listening on a folder, and emit event on new file', function(done) {
 
       var hl7TestMessage = fs.readFileSync('test/samples/adt.hl7').toString().replace(/\r?\n/g, "\r");
