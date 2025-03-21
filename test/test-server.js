@@ -13,11 +13,12 @@ describe('FileServer', function () {
   var fileServer;
   describe('.start()', function () {
     this.timeout(10000);
+    fs.mkdirSync('test/import');
     it('should start the file server listening on a folder, and emit event on new file', function (done) {
       var hl7TestMessage = fs
-      .readFileSync('test/samples/adt.hl7')
-      .toString()
-      .replace(/\r?\n/g, '\r');
+        .readFileSync('test/samples/adt.hl7')
+        .toString()
+        .replace(/\r?\n/g, '\r');
 
       fileServer = server.createFileServer(function (err, req, res) {
         assert.equal(req.msg.toString(), hl7TestMessage);
@@ -94,6 +95,27 @@ describe('TcpServer', function () {
         done();
       });
     });
+    it('should work if 2 messages sent in a row, first message successfully sent, second message blocked', function (done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+
+      var tcpClient = server.createTcpClient({ host: '127.0.0.1', port: 8686 });
+      var promise = new Promise(function (resolve) {
+        tcpClient.send(adt, function (err, ack) {
+          resolve({ err, ack });
+        });
+      });
+      var promise2 = new Promise(function (resolve) {
+        tcpClient.send(adt, function (err, ack) {
+          resolve({ err, ack });
+        });
+      });
+      Promise.all([promise, promise2]).then(function (results) {
+        assert(results[0].ack);
+        assert(results[1].err);
+        done();
+      });
+    });
     it('should work correctly if message sent as 2 parts', function (done) {
       var parser = new hl7.Parser();
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
@@ -116,7 +138,11 @@ describe('TcpServer', function () {
     it('should keep connection open and still work', function (done) {
       var parser = new hl7.Parser();
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
-      var tcpClient = server.createTcpClient({ host: '127.0.0.1', port: tcpServerPort, keepalive: true });
+      var tcpClient = server.createTcpClient({
+        host: '127.0.0.1',
+        port: tcpServerPort,
+        keepalive: true,
+      });
 
       tcpClient.send(adt, function (ack) {
         tcpClient.send(adt, function (ack) {
@@ -128,32 +154,55 @@ describe('TcpServer', function () {
   });
 
   describe('.stop()', function () {
-    it('should stop the tcp server and leave open connections', function (done) {
-      var tcpClient = server.createTcpClient({ host: '127.0.0.1', port: tcpServerPort, keepalive: true });
-      tcpClient.connect(
-        function () {
-          tcpServer.stop();
-          assert(!tcpClient.client.closed);
-          done();
-        }
-      )
+    it('should stop the tcp server', function (done) {
+      var parser = new hl7.Parser();
+      var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
+      var tcpClient1 = server.createTcpClient({ host: '127.0.0.1', port: 8686, keepalive: true });
+      tcpClient1.send(adt, function (err) {
+        if (err) return done(err);
+
+        tcpServer.stop();
+        setTimeout(function () {
+          var tcpClient2 = server.createTcpClient({
+            host: '127.0.0.1',
+            port: 8686,
+            keepalive: true,
+          });
+          tcpClient1.send(adt, function (err) {
+            // shows that open connections are still open
+            if (err) return done(err);
+            tcpClient2.send(adt, function (err, ack) {
+              // shows that new connections cannot open
+              assert.equal(err.code, 'ECONNREFUSED');
+              done();
+            });
+          });
+        });
+      });
     });
     it('should stop the tcp server and close all connections', function (done) {
-      tcpServer.start(tcpServerPort);
       var parser = new hl7.Parser();
-      var tcpClient = server.createTcpClient({host: '127.0.0.1', port: tcpServerPort, keepalive: true});
       var adt = parser.parse(fs.readFileSync('test/samples/adt.hl7').toString());
-      tcpClient.send(adt, function (err) {
-        if (err) {
-          console.log('Error connecting to TCP server:', err);
-          done(err);
-          return;
-        }
+      var tcpClient1 = server.createTcpClient({ host: '127.0.0.1', port: 8686, keepalive: true });
+      tcpServer.start(8686);
+      tcpClient1.send(adt, function (err) {
+        if (err) return done(err);
+
         tcpServer.stop(function () {
           setTimeout(function () {
-            assert(tcpClient.client.closed);
-            done();
-          });
+            // wait for close to finish on the client side
+            assert(!tcpClient1.client); // on close TcpClient.client is deleted
+            var tcpClient2 = server.createTcpClient({
+              host: '127.0.0.1',
+              port: 8686,
+              keepalive: true,
+            });
+            tcpClient2.send(adt, function (err, ack) {
+              // shows that new connections cannot open
+              assert.equal(err.code, 'ECONNREFUSED');
+              done();
+            });
+          }, 100);
         });
       });
     });
