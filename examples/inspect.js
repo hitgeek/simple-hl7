@@ -47,19 +47,15 @@ OBX|1|TS|30980-7^Date vaccination due^LN||20100102||||||F|
 OBX|1|TS|30981-5^Earliest date to give^LN||20091214||||||F|
 OBX|1|TS|59777-3^Latest date next dose should be given^LN||20151001||||||F|
 OBX|1|TS|59778-1^Date dose is overdue^LN||20100202||||||F|
-OBX|1|CE|59783-1^Status in immunization series^LN||P^Past Due^STC0002||||||F|`
+OBX|1|CE|59783-1^Status in immunization series^LN||P^Past Due^STC0002||||||F|`;
 
 var parser = new hl7.Parser();
 var inspector = new hl7.Inspector();
 var msg = parser.parse(adt);
 
 try {
-    var obj = inspector.inspect(msg);
-    console.log(obj);
-} catch(err) {
-    console.log(err);
+  var obj = inspector.inspect(msg);
+  console.log(obj);
+} catch (err) {
+  console.log(err);
 }
-
-
-
-

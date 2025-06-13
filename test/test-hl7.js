@@ -1,335 +1,533 @@
-var assert     = require("assert")
-var component  = require('../lib/hl7/component');
-var delimiters = require('../lib/hl7/delimiters')
-var field      = require('../lib/hl7/field');
-var fs         = require('fs');
-var header     = require('../lib/hl7/header');
-var message    = require('../lib/hl7/message');
-var Parser     = require('../lib/hl7/parser');
-var segment    = require('../lib/hl7/segment');
+var assert = require('assert');
+var component = require('../lib/hl7/component');
+var delimiters = require('../lib/hl7/delimiters');
+var field = require('../lib/hl7/field');
+var fs = require('fs');
+var header = require('../lib/hl7/header');
+var message = require('../lib/hl7/message');
+var Parser = require('../lib/hl7/parser');
+var segment = require('../lib/hl7/segment');
 
-var delimiters = {
-  subcomponentSeperator: "&",
-  repititionCharacter: "~",
-  componentSeperator: "^",
-  fieldSeperator: "|"
-}
 var parser = new Parser();
 
-describe('Component', function() {
-  describe('.toString()', function() {
-    it('should return hl7 with proper structure for various formats', function() {
+describe('Component', function () {
+  describe('.toString()', function () {
+    it('should return hl7 with proper structure for various formats', function () {
+      var singleComponent = new component('Single Component');
+      var componentWithSubcomponents = new component(['First Component', 'Second Component']);
 
-      var singleComponent = new component("Single Component");
-      var componentWithSubcomponents = new component(["First Component", "Second Component"]);
-      var repeatingComponent = new component("First Repeat", "Second Repeat");
-      var repeatingComponentWithSubComponents = new component(
-          ["First Component", "Second Component"],
-          ["First Repeat", "Second Repeat"]
+      assert.equal(singleComponent.toString(delimiters), 'Single Component');
+      assert.equal(
+        componentWithSubcomponents.toString(delimiters),
+        'First Component&Second Component',
+      );
+    });
+  });
+});
+
+describe('Field', function () {
+  describe('.toString()', function () {
+    it('should return hl7 with proper structure for various formats', function () {
+      var singleValueField = new field('Field Value');
+      var repeatingSingleValueField = new field('Field Value', 'Repeat Field Value');
+      var fieldWithComponents = new field(['Component 1', 'Component 2']);
+      var fieldWithComponentsWithSubcomponents = new field([
+        'Component 1',
+        ['Component 2 Subcomponent 1', 'Component 2 Subcomponent 2'],
+        'Component 3',
+      ]);
+      var fieldWithRepeatingComponents = new field(
+        ['Component 1', 'Component 2'],
+        ['Component 3', 'Component 4'],
+      );
+      var fieldWithRepeatingComponentsWithSubcomponents = new field(
+        ['Component 1', 'Component 2'],
+        [
+          ['Component 3 Subcomponent 1', 'Component 3 Subcomponent 2'],
+          ['Component 4 Subcomponent 1', 'Component 4 Subcomponent 2'],
+        ],
       );
 
-      assert.equal(singleComponent.toString(delimiters), "Single Component");
-      assert.equal(componentWithSubcomponents.toString(delimiters), "First Component&Second Component");
-      assert.equal(repeatingComponent.toString(delimiters), "First Repeat~Second Repeat");
-      assert.equal(repeatingComponentWithSubComponents.toString(delimiters), "First Component&Second Component~First Repeat&Second Repeat");
+      assert.equal(singleValueField.toString(delimiters), 'Field Value');
+      assert.equal(
+        repeatingSingleValueField.toString(delimiters),
+        'Field Value~Repeat Field Value',
+      );
+      assert.equal(fieldWithComponents.toString(delimiters), 'Component 1^Component 2');
+      assert.equal(
+        fieldWithComponentsWithSubcomponents.toString(delimiters),
+        'Component 1^Component 2 Subcomponent 1&Component 2 Subcomponent 2^Component 3',
+      );
+      assert.equal(
+        fieldWithRepeatingComponents.toString(delimiters),
+        'Component 1^Component 2~Component 3^Component 4',
+      );
+      assert.equal(
+        fieldWithRepeatingComponentsWithSubcomponents.toString(delimiters),
+        'Component 1^Component 2~Component 3 Subcomponent 1&Component 3 Subcomponent 2^Component 4 Subcomponent 1&Component 4 Subcomponent 2',
+      );
     });
   });
 });
 
-describe("Field", function() {
-  describe(".toString()", function() {
-    it('should return hl7 with proper structure for various formats', function() {
-      var singleValueField = new field("Field Value");
-      var repeatingSingleValueField = new field("Field Value", "Repeat Field Value");
-      var fieldWithComponents = new field(["Component 1", "Component 2"]);
-      var fieldWithComponentsWithSubcomponents = new field([
-        "Component 1",
-        ["Component 2 Subcomponent 1", "Component 2 Subcomponent 2"],
-        "Component 3"
-      ]);
+describe('Segment', function () {
+  describe('.toString()', function () {
+    it('should return hl7 with proper structure for various formats', function () {
+      var segmentWithSingleValueFields = new segment('NME', 'Field 1', 'Field 2', 'Field 3');
+      var segmentWithComponentValueFields = new segment(
+        'NME',
+        ['Component 1', 'Component 2'],
+        'Field 3',
+      );
 
-      assert.equal(singleValueField.toString(delimiters), "Field Value");
-      assert.equal(repeatingSingleValueField.toString(delimiters), "Field Value~Repeat Field Value");
-      assert.equal(fieldWithComponents.toString(delimiters), "Component 1^Component 2");
-      assert.equal(fieldWithComponentsWithSubcomponents.toString(delimiters), "Component 1^Component 2 Subcomponent 1&Component 2 Subcomponent 2^Component 3");
-
-    })
-  });
-});
-
-describe("Segment", function() {
-  describe(".toString()", function() {
-    it('should return hl7 with proper structure for various formats', function() {
-      var segmentWithSingleValueFields = new segment("NME", "Field 1", "Field 2", "Field 3");
-      var segmentWithComponentValueFields = new segment("NME", ["Component 1", "Component 2"], "Field 3");
-
-      assert.equal(segmentWithSingleValueFields.toString(delimiters), "NME|Field 1|Field 2|Field 3");
-      assert.equal(segmentWithComponentValueFields.toString(delimiters), "NME|Component 1^Component 2|Field 3");
+      assert.equal(
+        segmentWithSingleValueFields.toString(delimiters),
+        'NME|Field 1|Field 2|Field 3',
+      );
+      assert.equal(
+        segmentWithComponentValueFields.toString(delimiters),
+        'NME|Component 1^Component 2|Field 3',
+      );
     });
   });
-  describe(".addField()", function() {
-    it('should add a field, check using toString()', function() {
-      var segmentWithNoFields = new segment("NME");
-      segmentWithNoFields.addField("Field Value");
+  describe('.addField()', function () {
+    it('should add a field, check using toString()', function () {
+      var segmentWithNoFields = new segment('NME');
+      segmentWithNoFields.addField('Field Value');
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "NME|Field Value");
+      assert.equal(segmentWithNoFields.toString(delimiters), 'NME|Field Value');
 
-      segmentWithNoFields.addField(["Component 1", "Component 2"]);
+      segmentWithNoFields.addField(['Component 1', 'Component 2']);
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "NME|Field Value|Component 1^Component 2");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'NME|Field Value|Component 1^Component 2',
+      );
 
-      segmentWithNoFields.addField("Field Value");
+      segmentWithNoFields.addField('Field Value');
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "NME|Field Value|Component 1^Component 2|Field Value");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'NME|Field Value|Component 1^Component 2|Field Value',
+      );
     });
   });
-  describe(".setField()", function() {
-    it('should swap a field at certain index, check using toString()', function() {
-      var simpleSegment = new segment("NME", "Field 1", "Field 2", "Field 3");
+  describe('.setField()', function () {
+    it('should swap a field at certain index, check using toString()', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 2|Field 3');
 
-      simpleSegment.setField(2, ["Component 1", "Component 2"]);
+      simpleSegment.setField(2, ['Component 1', 'Component 2']);
 
-      assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Component 1^Component 2|Field 3");
+      assert.equal(
+        simpleSegment.toString(delimiters),
+        'NME|Field 1|Component 1^Component 2|Field 3',
+      );
     });
   });
-  describe(".removeField()", function() {
-    it('should remove a field, not sure why you would do this, check using toString()', function() {
-      var simpleSegment = new segment("NME", "Field 1", "Field 2", "Field 3");
+  describe('.removeField()', function () {
+    it('should remove a field, not sure why you would do this, check using toString()', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 2|Field 3');
 
       simpleSegment.removeField(2);
 
-      assert.equal(simpleSegment.toString(delimiters), "NME|Field 1|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 3');
     });
   });
-  describe('.getField(x)', function() {
-    it('should return a single field from the field value array', function() {
-      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
+  describe('.clearField()', function () {
+    it('should clear a field, check using toString()', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.getField(2), "Field 2");
-      assert.equal(simpleSegment.getField(3), "Component 1^Component 2");
-      assert.equal(simpleSegment.getField(5), "");
-    });
-  });
-  describe('.getField(x, z)', function() {
-    it('should return a repeating field value', function() {
-      var simpleSegment = new segment("NME");
-      simpleSegment.fields.push(new field("One", "Two"));
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1|Field 2|Field 3');
 
-      assert.equal(simpleSegment.getField(1, 1), "One");
-      assert.equal(simpleSegment.getField(1, 2), "Two");
-    });
-  });
-  describe('.getComponent(x)', function(){
-    it('should return the component at index', function() {
-      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2"]);
-      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
-      assert.equal(simpleSegment.getComponent(3, 2), "Component 2");
-      assert.equal(simpleSegment.getComponent(3, 3), "");
-    });
-  });
-  describe('.getComponent(x, z)', function(){
-    it('should return the sub component at index', function() {
-      var simpleSegment = new segment("NME", ["Component 1", ["Sub1", "Sub2"]]);
+      simpleSegment.clearField(2);
 
-      assert.equal(simpleSegment.getComponent(1, 2, 1), "Sub1");
-      assert.equal(simpleSegment.getComponent(1, 2, 2), "Sub2");
-      assert.equal(simpleSegment.getComponent(1, 2, 3), "");
+      assert.equal(simpleSegment.toString(delimiters), 'NME|Field 1||Field 3');
     });
   });
-  describe('.setComponent(x, v)', function(){
-    it('should return the component at index', function() {
-      var simpleSegment = new segment("NME", "Field 1", "Field 2", ["Component 1", "Component 2", ["Sub1", "Sub2"]]);
-      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
-      simpleSegment.setComponent(3, 1, "Component 1 Update");
-      assert.equal(simpleSegment.getComponent(3, 1), "Component 1 Update");
-      simpleSegment.setComponent(3, 3, [ "Sub1 Update", "Sub2 Update" ]);
-      assert.equal(simpleSegment.getComponent(3, 3), "Sub1 Update&Sub2 Update");
+  describe('.getField(x)', function () {
+    it('should return a single field from the field value array', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', ['Component 1', 'Component 2']);
+
+      assert.equal(simpleSegment.getField(2), 'Field 2');
+      assert.equal(simpleSegment.getField(3), 'Component 1^Component 2');
+      assert.equal(simpleSegment.getField(5), '');
+    });
+  });
+  describe('.getField(x, z)', function () {
+    it('should return a repeating field value', function () {
+      var simpleSegment = new segment('NME');
+      simpleSegment.fields.push(new field('One', 'Two'));
+
+      assert.equal(simpleSegment.getField(1, 1), 'One');
+      assert.equal(simpleSegment.getField(1, 2), 'Two');
+    });
+  });
+  describe('.getComponent(x)', function () {
+    it('should return the component at index', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', ['Component 1', 'Component 2']);
+      assert.equal(simpleSegment.getComponent(3, 1), 'Component 1');
+      assert.equal(simpleSegment.getComponent(3, 2), 'Component 2');
+      assert.equal(simpleSegment.getComponent(3, 3), '');
+    });
+  });
+  describe('.getComponent(x, z)', function () {
+    it('should return the sub component at index', function () {
+      var simpleSegment = new segment('NME', ['Component 1', ['Sub1', 'Sub2']]);
+
+      assert.equal(simpleSegment.getComponent(1, 2, 1), 'Sub1');
+      assert.equal(simpleSegment.getComponent(1, 2, 2), 'Sub2');
+      assert.equal(simpleSegment.getComponent(1, 2, 3), '');
+    });
+    it('should return the sub component at index 1', function () {
+      var rawMessage1 = 'MSH|^~\\&|\rNME|^foo&';
+      var message1 = parser.parse(rawMessage1);
+      var segment1 = message1.getSegment('NME');
+      assert.equal(segment1.getComponent(1, 2, 1), 'foo');
+
+      var rawMessage2 = 'MSH|^~\\&|\rNME|^foo';
+      var message2 = parser.parse(rawMessage2);
+      var segment2 = message2.getSegment('NME');
+      assert.equal(segment2.getComponent(1, 2, 1), 'foo');
+    });
+  });
+  describe('.setComponent(x, v)', function () {
+    it('should return the component at index', function () {
+      var simpleSegment = new segment('NME', 'Field 1', 'Field 2', [
+        'Component 1',
+        'Component 2',
+        ['Sub1', 'Sub2'],
+      ]);
+      assert.equal(simpleSegment.getComponent(3, 1), 'Component 1');
+      simpleSegment.setComponent(3, 1, 'Component 1 Update');
+      assert.equal(simpleSegment.getComponent(3, 1), 'Component 1 Update');
+      simpleSegment.setComponent(3, 3, ['Sub1 Update', 'Sub2 Update']);
+      assert.equal(simpleSegment.getComponent(3, 3), 'Sub1 Update&Sub2 Update');
     });
   });
 });
 
-describe("Header", function() {
-  describe(".toString()", function() {
-    it('same as segment, but with some special sauce', function() {
+describe('Header', function () {
+  describe('.toString()', function () {
+    it('same as segment, but with some special sauce', function () {
       var defaultHeader = new header();
 
-      assert.equal(defaultHeader.toString(delimiters), "MSH|^~\\&|");
+      assert.equal(defaultHeader.toString(delimiters), 'MSH|^~\\&|');
 
-      var headerWithFields = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
+      var headerWithFields = new header('Field 1', 'Field 2', ['Component 1', 'Component 2']);
 
-      assert.equal(headerWithFields.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Component 1^Component 2");
+      assert.equal(
+        headerWithFields.toString(delimiters),
+        'MSH|^~\\&|Field 1|Field 2|Component 1^Component 2',
+      );
+    });
+    it('same as previous test, but with the components first', function () {
+      var defaultHeader = new header();
+
+      assert.equal(defaultHeader.toString(delimiters), 'MSH|^~\\&|');
+
+      var headerWithFields = new header(['Component 1', 'Component 2'], 'Field 1', 'Field 2');
+
+      assert.equal(
+        headerWithFields.toString(delimiters),
+        'MSH|^~\\&|Component 1^Component 2|Field 1|Field 2',
+      );
+    });
+    it('should handle repeating fields and components correctly', function () {
+      // Test header with repeating components
+      var headerWithRepeatingComponents = new header(
+        ['Component 1', 'Component 2'],
+        new field('First Value', 'Second Value'),
+      );
+
+      assert.equal(
+        headerWithRepeatingComponents.toString(delimiters),
+        'MSH|^~\\&|Component 1^Component 2|First Value~Second Value',
+      );
+
+      // Test accessing repeating field values
+      assert.equal(headerWithRepeatingComponents.getHeaderField(4, 1), 'First Value');
+      assert.equal(headerWithRepeatingComponents.getHeaderField(4, 2), 'Second Value');
+
+      // Test with complex repeating structure
+      var complexHeader = new header('Sending App', 'Sending Facility', [
+        ['Patient', 'ID'],
+        ['MRN', '12345'],
+        'Additional Info',
+      ]);
+
+      assert.equal(
+        complexHeader.toString(delimiters),
+        'MSH|^~\\&|Sending App|Sending Facility|Patient&ID^MRN&12345^Additional Info',
+      );
     });
   });
-  describe(".addField()", function() {
-    it('should add a field, check using toString()', function() {
+  describe('.addField()', function () {
+    it('should add a field, check using toString()', function () {
       var segmentWithNoFields = new header();
-      segmentWithNoFields.addField("Field Value");
+      segmentWithNoFields.addField('Field Value');
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value");
+      assert.equal(segmentWithNoFields.toString(delimiters), 'MSH|^~\\&|Field Value');
 
-      segmentWithNoFields.addField(["Component 1", "Component 2"]);
+      segmentWithNoFields.addField(['Component 1', 'Component 2']);
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value|Component 1^Component 2',
+      );
 
-      segmentWithNoFields.addField("Field Value");
+      segmentWithNoFields.addField('Field Value');
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2|Field Value");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value|Component 1^Component 2|Field Value',
+      );
     });
   });
-  describe(".addHeaderField()", function() {
-    it('should add a field, check using toString()', function() {
+  describe('.addHeaderField()', function () {
+    it('should add a field, check using toString()', function () {
       var segmentWithNoFields = new header();
-      segmentWithNoFields.addHeaderField("Field Value", 3);
+      segmentWithNoFields.addHeaderField('Field Value', 3);
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value");
+      assert.equal(segmentWithNoFields.toString(delimiters), 'MSH|^~\\&|Field Value');
 
-      segmentWithNoFields.addHeaderField(["Component 1", "Component 2"], 4);
+      segmentWithNoFields.addHeaderField(['Component 1', 'Component 2'], 4);
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value|Component 1^Component 2',
+      );
 
-      segmentWithNoFields.addHeaderField("Field Value", 5);
+      segmentWithNoFields.addHeaderField('Field Value', 5);
 
-      assert.equal(segmentWithNoFields.toString(delimiters), "MSH|^~\\&|Field Value|Component 1^Component 2|Field Value");
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value|Component 1^Component 2|Field Value',
+      );
+    });
+    it('should add a field with a blank area, check using toString()', function () {
+      var segmentWithNoFields = new header();
+      segmentWithNoFields.addHeaderField('Field Value', 3);
+
+      assert.equal(segmentWithNoFields.toString(delimiters), 'MSH|^~\\&|Field Value');
+
+      segmentWithNoFields.addHeaderField(['Component 1', 'Component 2'], 5);
+
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value||Component 1^Component 2',
+      );
+
+      segmentWithNoFields.addHeaderField('Field Value2', 4);
+
+      assert.equal(
+        segmentWithNoFields.toString(delimiters),
+        'MSH|^~\\&|Field Value|Field Value2|Component 1^Component 2',
+      );
     });
   });
-  describe(".setField()", function() {
-    it('should swap a field at certain index, check using toString()', function() {
-      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+  describe('.setField()', function () {
+    it('should swap a field at certain index, check using toString()', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 2|Field 3');
 
-      simpleSegment.setField(2, ["Component 1", "Component 2"]);
+      simpleSegment.setField(2, ['Component 1', 'Component 2']);
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Component 1^Component 2|Field 3");
+      assert.equal(
+        simpleSegment.toString(delimiters),
+        'MSH|^~\\&|Field 1|Component 1^Component 2|Field 3',
+      );
     });
   });
-  describe(".setHeaderField()", function() {
-    it('should swap a field at certain index, check using toString()', function() {
-      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+  describe('.setHeaderField()', function () {
+    it('should swap a field at certain index, check using toString()', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 2|Field 3');
 
-      simpleSegment.setHeaderField(4, ["Component 1", "Component 2"]);
+      simpleSegment.setHeaderField(4, ['Component 1', 'Component 2']);
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Component 1^Component 2|Field 3");
+      assert.equal(
+        simpleSegment.toString(delimiters),
+        'MSH|^~\\&|Field 1|Component 1^Component 2|Field 3',
+      );
     });
   });
-  describe(".removeField()", function() {
-    it('should remove a field, not sure why you would do this, check using toString()', function() {
-      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+  describe('.removeField()', function () {
+    it('should remove a field, not sure why you would do this, check using toString()', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 2|Field 3');
 
       simpleSegment.removeField(2);
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 3');
     });
   });
-  describe(".removeHeaderField()", function() {
-    it('should remove a field, not sure why you would do this, check using toString()', function() {
-      var simpleSegment = new header("Field 1", "Field 2", "Field 3");
+  describe('.removeHeaderField()', function () {
+    it('should remove a field, not sure why you would do this, check using toString()', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', 'Field 3');
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 2|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 2|Field 3');
 
       simpleSegment.removeHeaderField(4);
 
-      assert.equal(simpleSegment.toString(delimiters), "MSH|^~\\&|Field 1|Field 3");
+      assert.equal(simpleSegment.toString(delimiters), 'MSH|^~\\&|Field 1|Field 3');
     });
   });
-  describe('.getField()', function() {
-    it('should return a single field from the field value array', function() {
-      var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
+  describe('.getField()', function () {
+    it('should return a single field from the field value array', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', ['Component 1', 'Component 2']);
 
-      assert.equal(simpleSegment.getField(2), "Field 2");
-      assert.equal(simpleSegment.getComponent(3, 1), "Component 1");
+      assert.equal(simpleSegment.getField(2), 'Field 2');
+      assert.equal(simpleSegment.getComponent(3, 1), 'Component 1');
     });
   });
-  describe('.getHeaderField()', function() {
-    it('should return a single field from the field value array', function() {
-      var simpleSegment = new header("Field 1", "Field 2", ["Component 1", "Component 2"]);
+  describe('.getHeaderField()', function () {
+    it('should return a single field from the field value array', function () {
+      var simpleSegment = new header('Field 1', 'Field 2', ['Component 1', 'Component 2']);
 
-      assert.equal(simpleSegment.getHeaderField(4), "Field 2");
-      assert.equal(simpleSegment.getHeaderComponent(5, 1), "Component 1");
+      assert.equal(simpleSegment.getHeaderField(4), 'Field 2');
+      assert.equal(simpleSegment.getHeaderComponent(5, 1), 'Component 1');
     });
   });
 });
 
-describe("Message", function() {
-  describe(".toString()", function() {
-    it('should print out structured hl7 message', function() {
-      var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
+describe('Message', function () {
+  describe('.toString()', function () {
+    it('should print out structured hl7 message', function () {
+      var emptyMessageWithSomeHeader = new message('Header Field 1', 'Header Field 2');
 
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2");
+      assert.equal(
+        emptyMessageWithSomeHeader.toString(delimiters),
+        'MSH|^~\\&|Header Field 1|Header Field 2',
+      );
     });
   });
-  describe(".addSegment()", function() {
-    it('should add segment with different syntaxes, check with toString()', function() {
-      var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
-      emptyMessageWithSomeHeader.addSegment("NME", "Field 1", "Field 2");
+  describe('.addSegment()', function () {
+    it('should add segment with different syntaxes, check with toString()', function () {
+      var emptyMessageWithSomeHeader = new message('Header Field 1', 'Header Field 2');
+      emptyMessageWithSomeHeader.addSegment('NME', 'Field 1', 'Field 2');
 
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2");
+      assert.equal(
+        emptyMessageWithSomeHeader.toString(delimiters),
+        'MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2',
+      );
 
-      emptyMessageWithSomeHeader.addSegment("NME", "Field 1", ["Component 1", "Component 2"]);
+      emptyMessageWithSomeHeader.addSegment('NME', 'Field 1', ['Component 1', 'Component 2']);
 
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters),
-      "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2\rNME|Field 1|Component 1^Component 2");
+      assert.equal(
+        emptyMessageWithSomeHeader.toString(delimiters),
+        'MSH|^~\\&|Header Field 1|Header Field 2\rNME|Field 1|Field 2\rNME|Field 1|Component 1^Component 2',
+      );
     });
   });
-  describe(".getSegment()", function() {
-    it('should get a segment for modification and you can change it with segment API, check with toString()', function() {
-      var emptyMessageWithSomeHeader = new message("Header Field 1", "Header Field 2");
-      emptyMessageWithSomeHeader.addSegment("NME", "Field 1", "Field 2");
+  describe('.getSegment()', function () {
+    it('should get a segment for modification and you can change it with segment API, check with toString()', function () {
+      var emptyMessageWithSomeHeader = new message('Header Field 1', 'Header Field 2');
+      emptyMessageWithSomeHeader.addSegment('NME', 'Field 1', 'Field 2');
 
-      var segmentFromMessage = emptyMessageWithSomeHeader.getSegment("NME");
+      var segmentFromMessage = emptyMessageWithSomeHeader.getSegment('NME');
 
-      assert.equal(segmentFromMessage.toString(delimiters), "NME|Field 1|Field 2");
+      assert.equal(segmentFromMessage.toString(delimiters), 'NME|Field 1|Field 2');
 
-      segmentFromMessage.setField(1, ["Component 1", "Component 2"]);
+      segmentFromMessage.setField(1, ['Component 1', 'Component 2']);
 
-      assert.equal(segmentFromMessage.toString(delimiters), "NME|Component 1^Component 2|Field 2");
-      assert.equal(emptyMessageWithSomeHeader.toString(delimiters), "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2");
-
+      assert.equal(segmentFromMessage.toString(delimiters), 'NME|Component 1^Component 2|Field 2');
+      assert.equal(
+        emptyMessageWithSomeHeader.toString(delimiters),
+        'MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2',
+      );
     });
   });
-  describe(".getSegments()", function() {
-    it('should return an array of segments, and if no segments return empy array', function() {
-      var messageWithRepeatingSegments = new message("Header Field 1", "Header Field 2");
-      messageWithRepeatingSegments.addSegment("NME", "Field 1", "Field 2");
-      messageWithRepeatingSegments.addSegment("NME", "Field 3", "Field 4");
+  describe('.getSegments()', function () {
+    it('should return an array of segments, and if no segments return empy array', function () {
+      var messageWithRepeatingSegments = new message('Header Field 1', 'Header Field 2');
+      messageWithRepeatingSegments.addSegment('NME', 'Field 1', 'Field 2');
+      messageWithRepeatingSegments.addSegment('NME', 'Field 3', 'Field 4');
 
-      var nmeSegments = messageWithRepeatingSegments.getSegments("NME");
+      var nmeSegments = messageWithRepeatingSegments.getSegments('NME');
       assert.equal(nmeSegments.length, 2);
-      assert.equal(nmeSegments[0].toString(messageWithRepeatingSegments.header.delimiters), "NME|Field 1|Field 2");
-      assert.equal(nmeSegments[1].toString(messageWithRepeatingSegments.header.delimiters), "NME|Field 3|Field 4");
-
+      assert.equal(
+        nmeSegments[0].toString(messageWithRepeatingSegments.header.delimiters),
+        'NME|Field 1|Field 2',
+      );
+      assert.equal(
+        nmeSegments[1].toString(messageWithRepeatingSegments.header.delimiters),
+        'NME|Field 3|Field 4',
+      );
     });
-  })
+  });
 });
 
-describe("Parser", function() {
-  describe(".parse()", function() {
-    it('should parse message with different segment seperators', function() {
-      var msg1 = "MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2"
-      var msg2 = "MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2"
-
-      var x = parser.parse(msg1);
+describe('Parser', function () {
+  describe('.parse()', function () {
+    it('should parse message with different segment separators', function () {
+      var msg1 = 'MSH|^~\\&|Header Field 1|Header Field 2\rNME|Component 1^Component 2|Field 2';
+      var msg2 = 'MSH|^~\\&|Header Field 1|Header Field 2\nNME|Component 1^Component 2|Field 2';
 
       assert.equal(parser.parse(msg1).segments.length, 1);
-      assert.equal(new Parser({segmentSeperator: '\n'}).parse(msg2).segments.length, 1);
+      assert.equal(new Parser({ segmentSeperator: '\n' }).parse(msg2).segments.length, 1);
+    });
+
+    it('should correctly parse subcomponents from strings', function () {
+      // Parse a message with subcomponents
+      var rawMessage = 'MSH|^~\\&|\rABC|Value1^Value2&Value3&Value4^Value5';
+      var parsedMessage = parser.parse(rawMessage);
+      var segment = parsedMessage.getSegment('ABC');
+
+      // Test accessing individual subcomponents
+      assert.equal(segment.getComponent(1, 2, 1), 'Value2');
+      assert.equal(segment.getComponent(1, 2, 2), 'Value3');
+
+      // Verify field as whole component structure
+      assert.equal(segment.getComponent(1, 2), 'Value2&Value3&Value4');
+      assert.equal(segment.getFieldComponent(1, 1), 'Value1^Value2&Value3&Value4^Value5');
+      assert.equal(segment.getFieldComponent(1, 1, 2), 'Value2&Value3&Value4');
+      assert.equal(segment.getFieldComponent(1, 1, 2, 2), 'Value3');
+      assert.equal(segment.getComponent(1, 1), 'Value1');
+      assert.equal(segment.getComponent(1, 3), 'Value5');
+    });
+    it('should correctly parse repeating fields', function () {
+      // Parse a message with repeating fields
+      var rawMessage = 'MSH|^~\\&|\rABC|Value1~Value2^Value3|Value4^Value5~Value6';
+      var parsedMessage = parser.parse(rawMessage);
+      var segment = parsedMessage.getSegment('ABC');
+
+      // Test accessing individual repeating field values
+      assert.equal(segment.getField(1, 1), 'Value1');
+      assert.equal(segment.getField(1, 2), 'Value2^Value3');
+      assert.equal(segment.getField(2), 'Value4^Value5~Value6');
+    });
+    it('should correctly parse repeating components with subcomponents', function () {
+      // Parse a message with repeating components and subcomponents
+      var rawMessage = 'MSH|^~\\&|\rABC|Value1^Value2~Value3&Value4^Value5~Value6&Value7&Value8';
+      var parsedMessage = parser.parse(rawMessage);
+      var segment = parsedMessage.getSegment('ABC');
+
+      // Test accessing individual repeating components with subcomponents
+      assert.equal(segment.getFieldComponent(1, 1, 2), 'Value2');
+      assert.equal(segment.getFieldComponent(1, 2, 2), 'Value5');
+      assert.equal(segment.getFieldComponent(1, 2, 1, 2), 'Value4');
     });
   });
-  describe("Parse sample documents. Success = output same as input", function() {
-    it('should parse all the sample documents', function() {
+  describe('Parse sample documents. Success = output same as input', function () {
+    it('should parse all the sample documents', function () {
       var samples = fs.readdirSync('test/samples');
-      var samples = samples.filter(function(x) { return x.indexOf('.hl7') > -1 });
+      samples = samples.filter(function (x) {
+        return x.indexOf('.hl7') > -1;
+      });
 
-      samples.forEach(function(x) {
-
-        var sampleText = fs.readFileSync('test/samples/' + x).toString().replace(/\r?\n/g, "\r").trim();
+      samples.forEach(function (x) {
+        var sampleText = fs
+          .readFileSync('test/samples/' + x)
+          .toString()
+          .replace(/\r?\n/g, '\r')
+          .trim();
         var sampleParse = parser.parse(sampleText);
 
         assert.ok(sampleParse.segments.length > 0);
@@ -337,11 +535,11 @@ describe("Parser", function() {
       });
     });
   });
-  describe("Ignore Empty Lines", function() {
-    it('should parse the correct number of segments', function() {
+  describe('Ignore Empty Lines', function () {
+    it('should parse the correct number of segments', function () {
       var sample = fs.readFileSync('test/samples/adt.txt');
-      var adt = parser.parse(sample.toString().replace(/\r?\n/g, "\r"));
+      var adt = parser.parse(sample.toString().replace(/\r?\n/g, '\r'));
       assert.equal(adt.segments.length, 3);
-    })
-  })
+    });
+  });
 });
